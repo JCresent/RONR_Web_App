@@ -1,0 +1,42 @@
+body {
+    font-family: "Blinker", system-ui;
+}
+
+h1 {
+    font-weight: 600;
+}
+
+#container {
+    width: 591px;
+    margin: auto auto;
+}
+
+#email,
+#password {
+    width: 580px;
+    height: 40px;
+    margin: 0 auto;
+}
+
+button {
+    background-color: #615033;
+    color: white;
+    font-family: "Blinker", system-ui;
+    width: 100%;
+    height: 45px;
+    border-radius: 4px;
+    margin: 0 auto;
+    border: none;
+}
+
+#links {
+    display: flex;
+    justify-content: space-between;
+}
+
+#forgotPassword,
+#register {
+    color: #61768b;
+    font-size: 12px;
+    margin-top: 10px;
+}
