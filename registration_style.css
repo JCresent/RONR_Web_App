@@ -1,6 +1,6 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background-color: black;
+  background-color: white;
 }
 
 * {
@@ -62,12 +62,11 @@ a {
 }
 
 .registration-title {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  align-items: center;
 }
 
 .registration-item {
-  margin: 10px; /* Optional: for spacing */
-  padding: 20px; /* Optional: for visual appeal */
-  border: 1px solid #ccc; /* Optional: for visual appeal */
+  margin: 10px;
 }
+
