@@ -60,3 +60,14 @@ a {
   background-color: #f1f1f1;
   text-align: center;
 }
+
+.registration-title {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.registration-item {
+  margin: 10px; /* Optional: for spacing */
+  padding: 20px; /* Optional: for visual appeal */
+  border: 1px solid #ccc; /* Optional: for visual appeal */
+}
