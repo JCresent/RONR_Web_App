@@ -1,6 +1,8 @@
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Blinker", Helvetica, sans-serif;
+  font-weight: 100;
   background-color: white;
+  color: #142536;
 }
 
 * {
@@ -10,17 +12,22 @@ body {
 /* Add padding to containers */
 .container {
   padding: 16px;
+  padding-left: 30%;
+  padding-right: 30%;
   background-color: white;
 }
 
 /* Full-width input fields */
 input[type=text], input[type=password] {
+  font-family: "Blinker", Helvetica, sans-serif;
+  font-weight: 100;
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
   display: inline-block;
-  border: none;
-  background: #f1f1f1;
+  border: 2px solid #61768b;
+  border-radius: 5px;
+  background: #ffffff;
 }
 
 input[type=text]:focus, input[type=password]:focus {
@@ -36,7 +43,9 @@ hr {
 
 /* Set a style for the submit button */
 .registerbtn {
-  background-color: #04AA6D;
+  font-family: "Blinker", Helvetica, sans-serif;
+  font-weight: 100;
+  background-color: #615033;
   color: white;
   padding: 16px 20px;
   margin: 8px 0;
@@ -51,8 +60,28 @@ hr {
 }
 
 /* Add a blue text color to links */
-a {
-  color: dodgerblue;
+/* unvisited link */
+a:link {
+  color: #61768b;
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color: #61768b;
+  text-decoration: none;
+}
+
+/* mouse over link */
+a:hover {
+  color: #61768b;
+  text-decoration: none;
+}
+
+/* selected link */
+a:active {
+  color: #61768b;
+  text-decoration: none;
 }
 
 /* Set a grey background color and center the text of the "sign in" section */
@@ -67,6 +96,13 @@ a {
 }
 
 .registration-item {
-  margin: 10px;
+  margin-right: 10px;
 }
 
+#links { 
+  text-align: right;
+}
+
+#registration-image {
+  transform: scale(0.75);
+}

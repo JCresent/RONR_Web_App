@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Blinker&display=swap"
+      rel="stylesheet"
+    />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Registration page</title>
     <link rel="stylesheet" href="registration_style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <form action="/action_page.php">
-        <div class="container">
-      <div class="registration-title">
-        <h1 class="registration-item">Register</h1>
-        <img
-          class="registration-item"
-          src=".\icons\registration_icon.svg"
-          alt="register button"
-        />
+      <div class="container">
+        <div class="registration-title">
+          <h1 class="registration-item">Register</h1>
+          <img
+            class="registration-item"
+            id="registration-image"
+            src=".\icons\registration_icon.svg"
+            alt="register button"
+          />
         </div>
-        
+
         <br />
         <br />
         <br />
@@ -43,7 +47,7 @@
           required
         />
 
-        <label for="psw-repeat"><b>Repeat Password</b></label>
+        <label for="psw-repeat"><b>Re-enter Password</b></label>
         <input
           type="password"
           placeholder="Repeat Password"
@@ -53,6 +57,11 @@
         />
 
         <button type="submit" class="registerbtn">Register</button>
+        <br />
+        <br />
+        <div id="links">
+          <a href="https://www.google.com">Already have an account?</a>
+        </div>
       </div>
     </form>
   </body>
