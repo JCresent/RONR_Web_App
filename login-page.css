@@ -6,6 +6,14 @@ h1 {
     font-weight: 600;
 }
 
+/* Add padding to containers */
+.container {
+    padding: 16px;
+    padding-left: 30%;
+    padding-right: 30%;
+    background-color: white;
+  }
+
 #container {
     width: 591px;
     margin: auto auto;
@@ -18,7 +26,7 @@ h1 {
     margin: 0 auto;
 }
 
-button {
+.login_button {
     background-color: #615033;
     color: white;
     font-family: "Blinker", system-ui;
@@ -27,6 +35,12 @@ button {
     border-radius: 4px;
     margin: 0 auto;
     border: none;
+    cursor: pointer;
+    opacity : 0.9;
+}
+
+.login_button:hover {
+    opacity: 1;
 }
 
 #links {
@@ -40,3 +54,16 @@ button {
     font-size: 12px;
     margin-top: 10px;
 }
+
+.login-title {
+    display: flex;
+    align-items: center;
+  }
+  
+  .login-item {
+    margin-right: 10px;
+  }
+  
+  #login-image {
+    transform: scale(0.75);
+  }

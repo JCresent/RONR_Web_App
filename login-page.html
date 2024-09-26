@@ -14,21 +14,29 @@
 
 <body>
     <div id="container">
-        <h1>Login</h1>
+        <div class= "login-title">
+            <h1 class="login-item">Login</h1>
+            <img
+            class="login-item"
+            id="login-image"
+            src=".\icons\login_icon.svg"
+            alt="login img"
+          />
+        </div>
         <br>
         <form id="login-form">
             <div>
                 <label for="email">Email</label> <br>
-                <input type="email" id="email" name="email" required>
+                <input type="email" placeholder="Enter Email" id="email" name="email" required>
             </div>
             <br>
             <div>
                 <label for="password">Password</label> <br>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" placeholder="Enter Password" name="password" required>
             </div>
             <br>
             <div>
-                <button type="submit">Login</button>
+                <button type="submit" class="login_button">Login</button>
             </div>
         </form>
         <div id="links">
