@@ -1,0 +1,91 @@
+body {
+    font-family: "Blinker", Helvetica, sans-serif;
+    font-weight: 100;
+    background-color: white;
+    color: #142536;
+    margin: 0;
+    padding: 0;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  .container {
+    padding: 16px;
+    margin: 0 auto;
+    max-width: 600px;
+    background-color: white;
+  }
+  
+  .registration-title {
+    display: flex;
+    align-items: left;
+    justify-content: left; /* Centering title for consistency */
+  }
+  
+  .registration-item {
+    margin-right: 10px;
+  }
+  
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
+    font-family: "Blinker", Helvetica, sans-serif;
+    font-weight: 100;
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: 2px solid #61768b;
+    border-radius: 5px;
+    background: #ffffff;
+  }
+  
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+  
+  .registerbtn {
+    font-family: "Blinker", Helvetica, sans-serif;
+    font-weight: 100;
+    background-color: #615033;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+  
+  .registerbtn:hover {
+    opacity: 1;
+  }
+  
+  #links {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+  
+  /* Update the font size of the links */
+  a {
+    color: #61768b;
+    text-decoration: none;
+    font-size: 16px; /* Adjusted to match the original size */
+    margin-top: 10px;
+  }
+  
+  a:hover {
+    color: #61768b;
+    text-decoration: none;
+  }
+  
+  #registration-image {
+    transform: scale(0.75);
+  }
+  
