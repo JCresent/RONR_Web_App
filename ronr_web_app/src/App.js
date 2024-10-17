@@ -1,6 +1,8 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './login-page'; // Your new start page component
+import LoginPage from './components/login-pages/login-page'; // Start page
+import Registration from './components/login-pages/registration'; // Registration page
+import PasswordReset from './components/login-pages/password-reset'; // Password reset page
 
 function App() {
   return (
@@ -9,6 +11,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
+            <Route path="/registration" element={<Registration />} />
+            <Route path="/password-reset" element={<PasswordReset />} />
           </Routes>
         </BrowserRouter>
         {/* <img src={logo} className="App-logo" alt="logo" />

@@ -1,9 +1,7 @@
-
-// Ensure this file exists and has the following content
-
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './login-styles.css';
-import loginIcon from './icons/login_icon.svg';
+import loginIcon from '../../icons/login_icon.svg';
 
 const LoginPage = () => {
 
@@ -32,8 +30,8 @@ const LoginPage = () => {
                     <br />
                     <br />
                     <div id="links">    
-                        <a href="registration.html" id="register">Don't have an account? Register</a>
-                        <a href="password-reset.html" id="forgotPassword">Did you forget your password?</a>
+                        <Link to="/registration" >Don't have an account? Register</Link>
+                        <Link to="/password-reset" > Did you forget your password?</Link>
                     </div>
             </div>
         </form>
