@@ -13,6 +13,11 @@ app.get("/", (req, res) => {
     });
 });
 
+// route to get discussions using a discussion id
+app.get("/discussion/:discussion_id", (req, res) => {
+  res.send(req.params);
+})
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
