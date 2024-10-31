@@ -1,49 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Blinker&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Blinker&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="home-style.css" />
     <title>Home Page</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="topbar">
-        <b style="margin-left: 20px;">Currently logged in as:</b>
-        <button type="logout" class="btn" style="margin-right: 20px;">Log Out</button>
+      <b style="margin-left: 20px">Currently logged in as:</b>
+      <button type="logout" class="btn" style="margin-right: 20px">
+        Log Out
+      </button>
     </div>
     <div class="main_container">
-        <img src="./icons/Chameleon.webp">
-        <div class="discussions_container">
-            <div class="discussions_header">
-                <select name="filter" id="filter">
-                    <option value="Newest">Newest First</option>
-                    <option value="Oldest">Oldest First</option>
-                    <option value="Open">Open Discussions First</option>
-                    <option value="Closed">Closed Discussions First</option>
-                </select>
-                <button type="button">+</button>
-            </div>
-            <div class="discussions">
-                <div class="discussion">
-                    <span>Discussion 1</span>
-                    <span>Join</span>
-                </div>
-                <div class="discussion">
-                    <span>Discussion 2</span>
-                    <span>Join</span>
-                </div>
-                <div class="discussion">
-                    <span>Discussion 3</span>
-                    <span>Join</span>
-                </div>
-            </div>
+      <img src="./icons/Chameleon.webp" />
+      <div class="discussions_container">
+        <div class="discussions_header">
+          <select name="filter" id="filter">
+            <option value="Newest">Newest First</option>
+            <option value="Oldest">Oldest First</option>
+            <option value="Open">Open Discussions First</option>
+            <option value="Closed">Closed Discussions First</option>
+          </select>
+          <button type="button" class="btn">Create a Discussion</button>
         </div>
+        <div class="discussions">
+          <div class="discussion">
+            <span>Discussion 1</span>
+            <span>Join</span>
+          </div>
+          <div class="discussion">
+            <span>Discussion 2</span>
+            <span>Join</span>
+          </div>
+          <div class="discussion">
+            <span>Discussion 3</span>
+            <span>Join</span>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
-
+  </body>
 </html>
