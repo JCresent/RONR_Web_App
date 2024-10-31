@@ -30,6 +30,68 @@ app.get("/", (req, res) => {
     });
 });
 
+// ROUTES BELOW
+// POST route to create a discussion
+app.post("/discussion/new", (req, res) => {
+  //res.send(req.body);
+  const { title, description, members } = req.body;
+
+  // get the current discussions
+  const curDiscussions = getDiscussions();
+
+  // Create a new discussion object
+  const newDiscussion = {
+    discussion_id: curDiscussions.length + 1,
+    title,
+    description,
+    members: members || [],
+    motions: []
+  };
+
+  // Add the discussion to the list of discussions
+  curDiscussions.push(newDiscussion);
+
+  // Return the newly created discussion
+  res.json(curDiscussions);
+})
+
+// POST route to add a member to a committee
+app.post("/discussion/add", (req, res) => {
+  //res.send(req.body);
+  const { discussion_id, member_id } = req.body;
+  // Find the discussion with the matching ID
+  const discussion = discussions.find(d => d.discussion_id === discussion_id);
+
+  // If the discussion is not found, return a 404 error
+  if (!discussion) {
+    return res.status(404).json({ error: "Discussion not found" });
+  }
+
+  // Add the member to the discussion
+  discussion.members.push(member_id);
+
+  // Return the updated discussion
+  res.json(discussion);
+});
+// POST route to create a motion in a committee
+app.post("/discussion/motion", (req, res) => {
+  //res.send(req.body);
+  const { discussion_id, motion } = req.body;
+  // Find the discussion with the matching ID 
+  const discussion = discussions.find(d => d.discussion_id === discussion_id);
+
+  // If the discussion is not found, return a 404 error
+  if (!discussion) {
+    return res.status(404).json({ error: "Discussion not found" });
+  }
+
+  // Add the motion to the discussion
+  discussion.motions.push(motion);
+
+  // Return the updated discussion
+  res.json(discussion);
+});
+
 // route to get discussions using a discussion id
 app.get("/discussion/:discussion_id", (req, res) => {
   //res.send(req.params);
