@@ -1,11 +1,16 @@
 import React from 'react';
 import './home-style.css';
 import courtroomImage from '../icons/courtroom.jpg';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const userEmail = location.state?.userEmail || 'No user logged in';
+
+  const handleLogout = () => {
+    navigate('/');
+  };
 
   return (
     <div className="home-page-container">
@@ -21,7 +26,12 @@ const HomePage = () => {
 
       <div id="topbar">
         <b style={{ marginLeft: '20px' }}>Currently logged in as: {userEmail}</b>
-        <button type="button" className="btn" style={{ marginRight: '20px' }}>
+        <button 
+          type="button" 
+          className="btn" 
+          style={{ marginRight: '20px' }}
+          onClick={handleLogout}
+        >
           Log Out
         </button>
       </div>
