@@ -1,9 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login-styles.css';
 import loginIcon from '../../icons/login_icon.svg';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent default form submission
+    // Add your login logic here if needed
+    navigate('/home'); // Navigate to home page
+  };
 
   return (
     <div>
@@ -13,7 +20,7 @@ const LoginPage = () => {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
         <link href="https://fonts.googleapis.com/css2?family=Blinker&display=swap" rel="stylesheet" />
         <title>Login Page</title>
-        <form action="/login_action.php">
+        <form onSubmit={handleSubmit}>
             <div className="container">
                 <div className="registration-title">
                     <h1 className="registration-item">Login</h1>
