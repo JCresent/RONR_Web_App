@@ -22,11 +22,11 @@ const RegistrationPage = () => {
                 <br />
                 <br />
                 <br />
-                <label htmlFor="email"><b>Email</b></label>
+                <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Email</b></label>
                 <input type="text" placeholder="Enter Email" name="email" id="email" required />
-                <label htmlFor="psw"><b>Password</b></label>
+                <label htmlFor="psw" style={{ display: 'block', textAlign: 'left'}}><b>Password</b></label>
                 <input type="password" placeholder="Enter Password" name="psw" id="psw" required />
-                <label htmlFor="psw-repeat"><b>Re-enter Password</b></label>
+                <label htmlFor="psw-repeat" style={{ display: 'block', textAlign: 'left'}}><b>Re-enter Password</b></label>
                 <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required />
                 <button type="submit" className="registerbtn">Register</button>
                 <br />
