@@ -6,7 +6,7 @@
 body {
     font-family: "Blinker", Helvetica, sans-serif;
     font-weight: 100;
-    background-color: white;
+    background-color: #e0cdac;
     color: #142536;
     margin: 0;
     padding: 0;
@@ -16,7 +16,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: white;
+    background-color: #e0cdac;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -67,5 +67,37 @@ body {
     max-height: 300px;
     width: 100%;
     object-fit: cover;
-    object-position: 0% 0%;
+    object-position: 50% 40%;
+}
+
+#filter {
+    font-family: "Blinker", Helvetica, sans-serif;
+    font-weight: 100;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: 2px solid #61768b;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+#title {
+    text-align: left;
+    background-color: #e0cdac;
+}
+
+#join {
+    text-align: right;
+    background-color: #e0cdac;
+}
+
+th {
+    background-color: white;
+}
+
+.basicinfo {
+    text-align: center;
+    background-color: #a1947e;
+    color: white;
+    padding-bottom: 20px;
 }
