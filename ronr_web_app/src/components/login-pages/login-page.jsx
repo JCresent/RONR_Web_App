@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login-styles.css';
 import loginIcon from '../../icons/login_icon.svg';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    // Add your login logic here if needed
-    navigate('/home'); // Navigate to home page
+    e.preventDefault();
+    navigate('/home', { state: { userEmail: email } });
   };
 
   return (
@@ -30,7 +30,15 @@ const LoginPage = () => {
                     <br />
                     <br />
                     <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Email</b></label>
-                    <input type="text" placeholder="Enter Email" name="email" id="email" required />
+                    <input 
+                      type="text" 
+                      placeholder="Enter Email" 
+                      name="email" 
+                      id="email" 
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                     <label htmlFor="password" style={{ display: 'block', textAlign: 'left'}}><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="password" id="password" required />
                     <button type="submit" className="registerbtn">Login</button>

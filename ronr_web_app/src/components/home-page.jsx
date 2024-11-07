@@ -1,8 +1,12 @@
 import React from 'react';
 import './home-style.css';
 import courtroomImage from '../icons/courtroom.jpg';
+import { useLocation } from 'react-router-dom';
 
 const HomePage = () => {
+  const location = useLocation();
+  const userEmail = location.state?.userEmail || 'No user logged in';
+
   return (
     <div className="home-page-container">
       <meta charSet="UTF-8" />
@@ -16,7 +20,7 @@ const HomePage = () => {
       <title>Home Page</title>
 
       <div id="topbar">
-        <b style={{ marginLeft: '20px' }}>Currently logged in as:</b>
+        <b style={{ marginLeft: '20px' }}>Currently logged in as: {userEmail}</b>
         <button type="button" className="btn" style={{ marginRight: '20px' }}>
           Log Out
         </button>
