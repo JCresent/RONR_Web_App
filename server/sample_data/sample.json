@@ -1,0 +1,37 @@
+[
+    {
+      "discussion_id": 1,
+      "name": "AI and Ethics",
+      "create_date": "2024-10-17",
+      "description": "A discussion on the ethical implications of AI technologies and their impact on society.",
+      "owner": "John Doe"
+    },
+    {
+      "discussion_id": 2,
+      "name": "Climate Change and Technology",
+      "create_date": "2024-09-30",
+      "description": "Exploring how advancements in technology can help mitigate the effects of climate change.",
+      "owner": "Jane Smith"
+    },
+    {
+      "discussion_id": 3,
+      "name": "Quantum Computing Innovations",
+      "create_date": "2024-08-21",
+      "description": "Discussion about recent breakthroughs and future potential in quantum computing.",
+      "owner": "Alice Johnson"
+    },
+    {
+      "discussion_id": 4,
+      "name": "Cybersecurity in the 21st Century",
+      "create_date": "2024-10-01",
+      "description": "An analysis of the current state and future trends in cybersecurity.",
+      "owner": "Robert Brown"
+    },
+    {
+      "discussion_id": 5,
+      "name": "Blockchain Beyond Cryptocurrency",
+      "create_date": "2024-07-15",
+      "description": "A deep dive into the various applications of blockchain technology outside of cryptocurrency.",
+      "owner": "Emily Davis"
+    }
+]
