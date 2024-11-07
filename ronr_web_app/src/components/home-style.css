@@ -6,10 +6,14 @@
 body {
     font-family: "Blinker", Helvetica, sans-serif;
     font-weight: 100;
-    background-color: #e0cdac;
-    color: #142536;
     margin: 0;
     padding: 0;
+}
+
+.home-page-container {
+    background-color: #e0cdac;
+    color: #142536;
+    min-height: 100vh;
 }
 
 #topbar {
