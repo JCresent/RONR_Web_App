@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "better-sqlite3": "^11.5.0"
+    "mongodb": "^6.10.0"
   }
 }
