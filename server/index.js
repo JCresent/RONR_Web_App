@@ -24,6 +24,8 @@ function getDiscussions() {
   }
 }
 
+
+
 app.get("/", (req, res) => {
     res.json({
         "message": "Hello World"
@@ -99,11 +101,22 @@ app.post("/discussion/motion", (req, res) => {
 
 // route to get discussions using a discussion id
 app.get("/discussion/:discussion_id", (req, res) => {
+  const discussions = getDiscussions()
+
   //res.send(req.params);
-  const discussionId = parseInt(req.params.id);
+  const dId = req.params.discussion_id;
+  console.log("Looking for ", dId)
 
   // Find the discussion with the matching ID
-  const discussion = discussions.find(d => d.discussion_id === discussionId);
+  let discussion = null
+  for (const d of discussions) {
+    console.log(d["discussion_id"])
+    if (d["discussion_id"] == dId) {
+      discussion = d
+    }
+  }
+  //const discussion = discussions.find(d => d.discussion_id === discussionId);
+  console.log(discussion)
 
   // If the discussion is not found, return a 404 error
   if (!discussion) {
