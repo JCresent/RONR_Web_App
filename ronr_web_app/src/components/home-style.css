@@ -5,7 +5,7 @@
 
 body {
     font-family: "Blinker", Helvetica, sans-serif;
-    font-weight: 100;
+    font-weight: 300;
     margin: 0;
     padding: 0;
 }
@@ -14,94 +14,264 @@ body {
     background-color: #e0cdac;
     color: #142536;
     min-height: 100vh;
+    padding-top: 65px;
 }
 
 #topbar {
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: #e0cdac;
+    background-color: #615033;
+    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* flex-direction: row-reverse; */
+    padding: 0 40px;
+    box-sizing: border-box;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    height: 65px;
 }
 
-.btn {
-    font-family: "Blinker", Helvetica, sans-serif;
-    font-weight: 100;
-    background-color: #615033;
+.topbar-left h2 {
+    margin: 0;
+    font-weight: 400;
+    font-size: 1.4em;
     color: white;
-    padding: 16px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-email {
+    font-size: 0.95em;
     opacity: 0.9;
 }
 
-.btn:hover {
-    opacity: 1;
+.nav-btn {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 20px;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: none;
+    box-shadow: none;
 }
 
 .main_container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    /* margin-top: px; */
-}
-
-.discussions_container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 10px;
-}
-
-.discussions_header {
-    display: flex;
-    justify-content: space-between;
-}
-
-.discussion {
-    display: flex;
-    justify-content: space-between;
+    gap: 2rem;
+    padding-top: 20px;
 }
 
 #courtroompic {
-    max-height: 300px;
+    max-height: 400px;
     width: 100%;
     object-fit: cover;
     object-position: 50% 40%;
 }
 
+.basicinfo {
+    text-align: center;
+    background-color: #615033;
+    color: white;
+    padding: 40px 20px;
+    margin: 0 40px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.discussions_container {
+    padding: 0 40px 40px 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.discussions_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
 #filter {
     font-family: "Blinker", Helvetica, sans-serif;
-    font-weight: 100;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    display: inline-block;
-    border: 2px solid #61768b;
-    border-radius: 5px;
+    font-weight: 300;
+    padding: 12px 20px;
+    border: 1px solid #615033;
+    border-radius: 8px;
     background: #ffffff;
+    min-width: 200px;
+}
+
+.btn {
+    font-family: "Blinker", Helvetica, sans-serif;
+    font-weight: 300;
+    background-color: #615033;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #776345;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#discussion_list {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#discussion_list th {
+    padding: 20px 30px;
+    background-color: #615033;
+    color: white;
+    font-weight: 400;
+    font-size: 1.1em;
+}
+
+#discussion_list td {
+    padding: 16px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+#discussion_list tr:last-child td {
+    border-bottom: none;
+}
+
+#discussion_list tr:hover {
+    background-color: rgba(97, 80, 51, 0.05);
+}
+
+#discussion_list .btn {
+    padding: 8px 16px;
+    margin: 0;
 }
 
 #title {
     text-align: left;
-    background-color: #e0cdac;
+    width: 80%;
 }
 
 #join {
-    text-align: right;
-    background-color: #e0cdac;
-}
-
-th {
-    background-color: white;
-}
-
-.basicinfo {
     text-align: center;
-    background-color: #a1947e;
-    color: white;
-    padding-bottom: 20px;
+    width: 20%;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.modal {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #666;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.modal-buttons .btn {
+    min-width: 120px;
+    padding: 0.8rem 1.5rem;
+}
+
+.modal h2 {
+    margin-bottom: 1.5rem;
+    color: #142536;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #142536;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #615033;
+    border-radius: 8px;
+    font-family: "Blinker", Helvetica, sans-serif;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.btn-secondary {
+    background-color: #8c8c8c;
+}
+
+.btn-secondary:hover {
+    background-color: #999999;
 }
