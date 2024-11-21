@@ -41,6 +41,26 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+```
+OBJECTS FOR DB
+committees {
+            committee_id INTEGER,
+            owner_id INTEGER,
+            chair_id INTEGER, 
+            members { member #: userid, member #: userid, ... },
+            created_at TIMESTAMP, 
+          }
+
+users {
+            user_id INTEGER,
+            username TEXT,
+            created_at TIMESTAMP, 
+            bio TEXT, 
+            is_admin BOOLEAN
+      }
+```
+
 // code to get the sample json data
 // Read and parse the JSON file
 const discussionsFilePath = path.join(__dirname, 'sample_data', 'sample.json');
