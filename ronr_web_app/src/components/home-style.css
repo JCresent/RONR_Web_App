@@ -184,6 +184,7 @@ body {
     width: 90%;
     max-width: 500px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .modal h2 {
@@ -218,8 +219,7 @@ body {
 
 .modal-buttons {
     display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
+    justify-content: center;
     margin-top: 2rem;
 }
 
@@ -245,4 +245,28 @@ body {
     border-color: rgba(255, 255, 255, 0.5);
     transform: none;
     box-shadow: none;
+}
+
+.modal .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #615033;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal .close-button:hover {
+    color: #776345;
+    background-color: rgba(97, 80, 51, 0.1);
 }
