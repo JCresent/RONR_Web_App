@@ -11,8 +11,7 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [newDiscussion, setNewDiscussion] = React.useState({
     title: '',
-    description: '',
-    type: 'public'
+    description: ''
   });
 
   const handleLogout = () => {
@@ -32,7 +31,11 @@ const HomePage = () => {
     };
     setDiscussions([...discussions, discussion]);
     setIsModalOpen(false);
-    setNewDiscussion({ title: '', description: '', type: 'public' }); // Reset form
+    setNewDiscussion({ title: '', description: '' }); // Reset form
+  };
+
+  const handleJoinDiscussion = (discussion) => {
+    navigate('/chat', { state: { discussion } });
   };
 
   return (
@@ -110,7 +113,13 @@ const HomePage = () => {
                   <tr key={discussion.id}>
                     <td>{discussion.title}</td>
                     <td>
-                      <button type="button" className="btn">Join</button>
+                      <button 
+                        type="button" 
+                        className="btn"
+                        onClick={() => handleJoinDiscussion(discussion)}
+                      >
+                        Join
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -157,21 +166,6 @@ const HomePage = () => {
                   })}
                   required
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="type">Discussion Type:</label>
-                <select
-                  id="type"
-                  value={newDiscussion.type}
-                  onChange={(e) => setNewDiscussion({
-                    ...newDiscussion,
-                    type: e.target.value
-                  })}
-                >
-                  <option value="public">Public</option>
-                  <option value="private">Private</option>
-                </select>
               </div>
 
               <div className="modal-buttons">
