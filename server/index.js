@@ -31,6 +31,11 @@ app.get("/", (req, res) => {
 });
 
 // ROUTES BELOW
+// POST route to login
+app.post("/login", (req, res) => {
+  
+})
+
 // POST route to create a discussion
 app.post("/discussion/new", (req, res) => {
   //res.send(req.body);
