@@ -3,19 +3,20 @@ const fs = require('fs');
 const path = require('path');
 
 //env variables 
+// console.log(require("dotenv").config({path: '../.env'}))
 const dotenv = require("dotenv"); 
-dotenv.config(); // to use the .env file
+dotenv.config({path: '../.env'}); // to use the .env file
 
 //MongoDB
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = 'mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
-    deprecationErrors: true,
+    deprecationErrors: true,  
   }
 });
 async function run() {
