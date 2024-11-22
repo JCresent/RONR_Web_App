@@ -1,8 +1,10 @@
 # Robert's Rules of Order Web Application
 > Web application implementing a voting system utilizing RONR
 
-## IMPORTANT:    
-Make sure your .env file is not committed to the repo once you add your DB username and password. It is added to the .gitignore, but if it still appears in your working tree run this command in the base directory:   
+## IMPORTANT (Updated):    
+Decided to remove the .env file from the repo. If you did not already pull the last version, make sure to create a **.env** file in the base dir of the repo with the following format:    
 ```
-git update-index --skip-worktree .env 
+DB_USERNAME=username
+DB_PASSWORD=password
 ```
+> Replace with your respective database account username and password
