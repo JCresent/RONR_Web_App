@@ -23,7 +23,7 @@ const PasswordResetPage = () => {
             <br />
             <br />
             <br />
-            <label htmlFor="email"><b>Send Email</b></label>
+            <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Send Email</b></label>
             <input type="email" placeholder="Enter Email" id="email" name="email" required />
             <button type="submit" className="registerbtn">
                 Send Password Reset Email
