@@ -1,20 +1,50 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import './chat-style.css';
 
 const ChatPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const discussion = location.state?.discussion;
+
+  const [messages, setMessages] = React.useState([
+    ['User1', 'Hello!'],
+    ['User2', 'Hi, how are you?'],
+    [user?.email, "I'm good, thanks!"]
+  ]);
+  const [inputMessage, setInputMessage] = React.useState('');
+  const [participants] = React.useState([1, 2, 7]);
 
   const handleExit = () => {
     navigate('/home');
   };
 
+  const handleInputChange = (e) => {
+    setInputMessage(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    if (inputMessage.trim()) {
+      setMessages([...messages, [
+        user?.email,
+        inputMessage
+      ]]);
+      setInputMessage('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <h1>Discussion Title</h1>
+        <h1>{discussion?.title || 'Discussion Title'}</h1>
         <button onClick={handleExit} className="exit-button">Exit</button>
       </div>
       
@@ -22,9 +52,11 @@ const ChatPage = () => {
         <div className="sidebar">
           <h2>Participants</h2>
           <div className="participants-list">
-            <div className="participant">Participant1</div>
-            <div className="participant">Participant2</div>
-            <div className="participant">Participant3</div>
+            {participants.map(participantId => (
+              <div key={participantId} className="participant">
+                Participant {participantId}
+              </div>
+            ))}
           </div>
           
           <button className="motion-button">Motion to Vote</button>
@@ -38,17 +70,17 @@ const ChatPage = () => {
         
         <div className="chat-main">
           <div className="messages">
-            <div className="message other-message">
-              <span className="user">User1:</span>
-              <div className="message-content">Hello!</div>
-            </div>
-            <div className="message other-message">
-              <span className="user">User2:</span>
-              <div className="message-content">Hi, how are you?</div>
-            </div>
-            <div className="message user-message">
-              <div className="message-content">I'm good, thanks!</div>
-            </div>
+            {messages.map((message, index) => (
+              <div 
+                key={index} 
+                className={`message ${message[0] === user?.email ? 'user-message' : 'other-message'}`}
+              >
+                {message[0] !== user?.email && (
+                  <span className="user">{message[0]}:</span>
+                )}
+                <div className="message-content">{message[1]}</div>
+              </div>
+            ))}
           </div>
           
           <div className="chat-input">
@@ -56,8 +88,16 @@ const ChatPage = () => {
               type="text" 
               placeholder="Enter text here..."
               className="message-input"
+              value={inputMessage}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
             />
-            <button className="submit-button">Submit</button>
+            <button 
+              className="submit-button"
+              onClick={handleSubmit}
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>

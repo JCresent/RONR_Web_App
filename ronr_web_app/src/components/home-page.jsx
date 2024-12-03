@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './home-style.css';
 import courtroomImage from '../icons/courtroom.jpg';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const HomePage = () => {
-  const location = useLocation();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
-  const userEmail = location.state?.userEmail || 'No user logged in';
   const [discussions, setDiscussions] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [newDiscussion, setNewDiscussion] = React.useState({
@@ -14,7 +14,21 @@ const HomePage = () => {
     description: ''
   });
 
+  useEffect(() => {
+    // Check if user exists in context, if not try localStorage
+    if (!user) {
+      const storedEmail = localStorage.getItem('userEmail');
+      if (storedEmail) {
+        setUser({ email: storedEmail });
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, setUser, navigate]);
+
   const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('userEmail');
     navigate('/');
   };
 
@@ -55,7 +69,7 @@ const HomePage = () => {
           <h2>Robert's Rules</h2>
         </div>
         <div className="topbar-right">
-          <span className="user-email">{userEmail}</span>
+          <span className="user-email">{user?.email}</span>
           <button 
             type="button" 
             className="btn nav-btn"
