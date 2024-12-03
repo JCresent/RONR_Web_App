@@ -28,7 +28,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
@@ -42,24 +42,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-```
-OBJECTS FOR DB
-committees {
-            committee_id INTEGER,
-            owner_id INTEGER,
-            chair_id INTEGER, 
-            members { member #: userid, member #: userid, ... },
-            created_at TIMESTAMP, 
-          }
+// ```
+// OBJECTS FOR DB
+// committees {
+//             committee_id INTEGER,
+//             owner_id INTEGER,
+//             chair_id INTEGER, 
+//             members { member #: userid, member #: userid, ... },
+//             created_at TIMESTAMP, 
+//           }
 
-users {
-            user_id INTEGER,
-            username TEXT,
-            created_at TIMESTAMP, 
-            bio TEXT, 
-            is_admin BOOLEAN
-      }
-```
+// users {
+//             user_id INTEGER,
+//             username TEXT,
+//             created_at TIMESTAMP, 
+//             bio TEXT, 
+//             is_admin BOOLEAN
+//       }
+// ```
 
 // code to get the sample json data
 // Read and parse the JSON file
