@@ -50,7 +50,7 @@ app.use(bodyParser.json());
 //             chair_id INTEGER, 
 //             members { member #: userid, member #: userid, ... },
 //             created_at TIMESTAMP, 
-//             title 
+//             title TEXT
 //             chat { message #: {userid, text}, message #: {userid, text} },
 //             motioned BOOLEAN,
 //             seconded BOOLEAN,
