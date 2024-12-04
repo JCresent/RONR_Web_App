@@ -1,4 +1,11 @@
 const express = require("express");
+const app = express();
+const port = 3000;
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const fs = require('fs');
 const path = require('path');
 
@@ -8,8 +15,13 @@ const dotenv = require("dotenv");
 dotenv.config({path: '../.env'}); // to use the .env file
 
 //MongoDB
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, Timestamp } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+//Database and Clusters 
+let database; 
+let com_cluster; 
+let user_cluster; 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -27,19 +39,47 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+    //Grab database and clusters
+    database = client.db("ronr_db");
+    com_cluster = database.collection("committees");
+    user_cluster = database.collection("users");
   }
 }
 run().catch(console.dir);
 
+// Insert new users into db
+async function insertUser(user_doc) {
+  // Insert into the "users" cluster
+  const result = await user_cluster.insertOne(user_doc); 
+  // Print the ID of the inserted document
+  console.log(`A user was inserted with the _id: ${result.insertedId}`);
+}
 
-const app = express();
-const port = 3000;
+// User signups from signup page
+app.post("/newuser/post", (req, res) => {
+  try {
+    const user_and_pass = req.body;
+    console.log(user_and_pass.email);
+    console.log(user_and_pass.psw);
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+    // Creating document to insert 
+    const user_doc = {
+      username: user_and_pass.email,
+      password: user_and_pass.psw,
+      created_at: new Timestamp(),
+      bio: "None", 
+      is_admin: false,
+    }
+    
+    // Insert into the "users" cluster
+    insertUser(user_doc); 
+  }
+  finally {
+    //Go back to login page 
+    console.log("Success! Created new user."); 
+    res.redirect("/");
+  }
+});
 
 
 // ```

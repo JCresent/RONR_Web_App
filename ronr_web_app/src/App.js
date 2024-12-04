@@ -4,7 +4,7 @@ import LoginPage from './components/login-pages/login-page'; // Start page
 import Registration from './components/login-pages/registration'; // Registration page
 import PasswordReset from './components/login-pages/password-reset'; // Password reset page
 import HomePage from './components/home-page'; // Home page
-import ChatPage from './components/chat-page'; // Add this import
+import ChatPage from './components/chat-page';
 
 function App() {
   return (

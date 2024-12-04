@@ -22,13 +22,15 @@ const RegistrationPage = () => {
                 <br />
                 <br />
                 <br />
-                <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" id="email" required />
-                <label htmlFor="psw" style={{ display: 'block', textAlign: 'left'}}><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="psw" id="psw" required />
-                <label htmlFor="psw-repeat" style={{ display: 'block', textAlign: 'left'}}><b>Re-enter Password</b></label>
-                <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required />
-                <button type="submit" className="registerbtn">Register</button>
+                <form action="../../../../newuser/post" method="post" className="reg_form">
+                    <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Email</b></label>
+                    <input type="text" placeholder="Enter Email" name="email" id="email" required />
+                    <label htmlFor="psw" style={{ display: 'block', textAlign: 'left'}}><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" name="psw" id="psw" required />
+                    <label htmlFor="psw-repeat" style={{ display: 'block', textAlign: 'left'}}><b>Re-enter Password</b></label>
+                    <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required />
+                    <button type="submit" className="registerbtn">Register</button>
+                </form>
                 <br />
                 <br />
                     <div id="links">
