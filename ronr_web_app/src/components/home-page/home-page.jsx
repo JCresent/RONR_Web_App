@@ -1,6 +1,6 @@
 import React from 'react';
 import './home-style.css';
-import courtroomImage from '../icons/courtroom.jpg';
+import courtroomImage from '../../icons/courtroom.jpg';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
