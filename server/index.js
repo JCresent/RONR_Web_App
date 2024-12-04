@@ -81,6 +81,36 @@ app.post("/newuser/post", (req, res) => {
   }
 });
 
+async function findUser(email, pwd){
+  const result = await user_cluster.findOne( {username:email, password:pwd} );
+  console.log("Result of the search: " + result);
+  return result;
+}
+
+app.post("/findUser", async (req, res) => {
+  try{
+    const email = req.body.email; 
+    const password = req.body.password;  
+    console.log("Username is: " + email + ". PWD is: " + password +".");
+    const resultOfSearch = await findUser(email,password);
+    if(resultOfSearch != null){
+      res.status(200).json({
+        message: 'User login successful.',
+      });
+      //res.redirect("/home")
+    }
+    else{
+      res.status(400).json({
+        message: 'Unsuccessful login! Please check your email & password.',
+      });
+    }
+  }
+  catch(error){
+    console.log(error);
+
+    console.log("Error looking up user.")
+  }
+});
 
 // ```
 // OBJECTS FOR DB
@@ -125,7 +155,7 @@ app.get("/getCommittees", async (req, res) => {
 }); 
 
 app.get("/", (req, res) => {
-    res.json({
+  res.json({
         "message": "Hello World"
     });
 });
