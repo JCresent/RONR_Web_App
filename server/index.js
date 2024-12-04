@@ -81,6 +81,35 @@ app.post("/newuser/post", (req, res) => {
   }
 });
 
+async function createMotion(discussionId) {
+  // First, we define the query to find the write discussion
+  const query = { _id: discussionId};
+
+  // Define the update operation to be performed
+  const update = {
+    $set: { motioned: true }
+  };
+
+  const result = await com_cluster.updateOne(query, update);
+  console.log(`${result} was motioned.`);
+}
+
+// Creating a motion
+app.put("/discussion/createMotion", (req, res) => {
+  try {
+    const discussion = req.body;
+    console.log(discussion.id);
+
+    // Update the discussion 
+    createMotion(discussion.id)
+  } finally {
+    console.log("Successfully created the motion!");
+    res.redirect("/");
+  }
+});
+
+
+
 
 // ```
 // OBJECTS FOR DB
