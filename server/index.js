@@ -41,7 +41,7 @@ async function run() {
   } finally {
     //Grab database and clusters
     database = client.db("ronr_db");
-    com_cluster = database.collection("committees");
+    com_cluster = database.collection("commitees");
     user_cluster = database.collection("users");
   }
 }
@@ -112,16 +112,17 @@ app.post("/newuser/post", (req, res) => {
 // Read and parse the JSON file
 const discussionsFilePath = path.join(__dirname, 'sample_data', 'sample.json');
 
-function getDiscussions() {
+app.get("/getCommittees", async (req, res) => {
   try {
-    // Read the file synchronously and parse JSON
-    const data = fs.readFileSync(discussionsFilePath, 'utf-8');
-    return JSON.parse(data);
+    // Read through the database
+    const committees = await com_cluster.find({}, { projection: { "title": 1, "description": 1, _id: 0 } } ).toArray(); //Projection only returns those fields from db
+    // console.log(committees); 
+    res.json(committees);
   } catch (error) {
-    console.error("Error reading the discussions file:", error);
-    return [];
+    console.error("Error grabbing committees:", error);
+    res.status(500).json({ error: "Failed to retrieve committees" });
   }
-}
+}); 
 
 app.get("/", (req, res) => {
     res.json({

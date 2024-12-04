@@ -1,6 +1,6 @@
 import React from 'react';
 import './home-style.css';
-import courtroomImage from '../icons/courtroom.jpg';
+import courtroomImage from '../../icons/courtroom.jpg';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
@@ -13,6 +13,21 @@ const HomePage = () => {
     title: '',
     description: ''
   });
+
+  //Grabbing committees
+  const fetchCommittees = async () => {
+    try {
+      const response = await fetch('/getCommittees');
+      const data = await response.json();
+      setDiscussions(data);
+    } catch (error) {
+      console.error('Error fetching committees:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCommittees();
+  }, []);
 
   const handleLogout = () => {
     navigate('/');
