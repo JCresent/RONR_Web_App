@@ -26,8 +26,6 @@ const RegistrationPage = () => {
     };
 
     const validateFormInput = (event) => {
-        console.log("Validating input"); 
-        event.preventDefault(); 
 
         // Track input errors
         let inputError = {
@@ -36,8 +34,13 @@ const RegistrationPage = () => {
             confirmPassword: "",
         }; 
 
-        //Check if passwords match
+        // Regexes 
+        const validEmail = new RegExp('^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$');
+        const validPassword = new RegExp('^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$'); //One upper case, one lower case, one digit, one special character, 8 length
+
+        // Check if passwords match
         if (formInput.confirmPassword !== formInput.psw) {
+            event.preventDefault(); 
             console.log("Don't match!");
             setFormError({
                 ...inputError,
@@ -45,6 +48,31 @@ const RegistrationPage = () => {
             });
             return false;
         }
+
+        // Check to make sure email is valid 
+        if (!validEmail.test(formInput.email)) {
+            event.preventDefault(); 
+            console.log("Invalid Email Format");
+            setFormError({
+                ...inputError,
+                email: "Invalid Email Format",
+            });
+            return false;
+        }
+
+        // Check to make sure password is valid 
+        if (!validPassword.test(formInput.psw)) {
+            event.preventDefault(); 
+            console.log("Password is too weak");
+            setFormError({
+                ...inputError,
+                password: "Password must contain: 1 Upper Case, 1 Lower Case, 1 Number, 1 Special Char, and 8 Characters Long",
+            });
+            return false;
+        }
+
+        // Clear previous errors 
+        setFormError(inputError); 
     }
 
     return (
