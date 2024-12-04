@@ -89,4 +89,11 @@ body {
   #registration-image {
     transform: scale(0.75);
   }
+
+  .error-message {
+    font-size: 12px;
+    font-weight: 500;
+    color: red;
+    margin-top: 3px;
+  }
   
