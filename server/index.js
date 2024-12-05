@@ -24,6 +24,53 @@ let database;
 let com_cluster;
 let user_cluster;
 
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 3002 });
+
+// Track clients per discussion
+const discussionClients = new Map();
+
+wss.on('connection', (ws) => {
+  let discussionId = null;
+
+  ws.on('message', (message) => {
+    try {
+      const data = JSON.parse(message);
+      
+      if (data.type === 'join') {
+        discussionId = data.discussionId;
+        if (!discussionClients.has(discussionId)) {
+          discussionClients.set(discussionId, new Set());
+        }
+        discussionClients.get(discussionId).add(ws);
+      } else if (data.type === 'message') {
+        const clients = discussionClients.get(discussionId);
+        if (clients) {
+          clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN && client !== ws) {
+              client.send(JSON.stringify({
+                type: 'message',
+                userId: data.userId,
+                message: data.message
+              }));
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('WebSocket error:', error);
+    }
+  });
+
+  ws.on('close', () => {
+    if (discussionId && discussionClients.has(discussionId)) {
+      discussionClients.get(discussionId).delete(ws);
+    }
+  });
+});
+
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
