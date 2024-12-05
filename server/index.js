@@ -17,7 +17,7 @@ dotenv.config({ path: "../.env" }); // to use the .env file
 //MongoDB
 
 const { MongoClient, ServerApiVersion, Timestamp, ObjectId } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://dsaxena:backendDev432@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 //Database and Clusters
 let database;
