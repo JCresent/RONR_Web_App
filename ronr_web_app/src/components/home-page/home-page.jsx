@@ -236,7 +236,7 @@ const HomePage = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="description">Description:</label>
+                <label htmlFor="description">Description of the issue:</label>
                 <textarea
                   id="description"
                   value={newDiscussion.description}
