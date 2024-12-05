@@ -143,7 +143,6 @@ const discussionsFilePath = path.join(__dirname, "sample_data", "sample.json");
 
 app.get("/getCommittees", async (req, res) => {
   try {
-log(committees);
     // Remove the projection to get all fields
     const committees = await com_cluster.find({}).toArray();
     console.log("Sending committees:", committees); // Debug log
@@ -295,6 +294,23 @@ app.post("/creatediscussion", async (req, res) => {
   } catch (error) {
     console.error("Error creating discussion:", error);
     res.status(500).json({ error: "Failed to create discussion" });
+  }
+});
+
+// Get issue description for a specific discussion
+app.get("/discussion/:discussionId/description", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+    
+    res.json(discussion.description || "");
+  } catch (error) {
+    console.error("Error getting messages:", error);
+    res.status(500).json({ error: "Failed to retrieve messages" });
   }
 });
 
