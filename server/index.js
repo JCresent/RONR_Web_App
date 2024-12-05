@@ -315,3 +315,51 @@ app.get("/user/:userId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve user" });
   }
 });
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 3002 });
+
+// Keep track of clients for each discussion
+const discussionClients = new Map();
+
+wss.on('connection', (ws) => {
+  let discussionId = null;
+
+  ws.on('message', (message) => {
+    const data = JSON.parse(message);
+    
+    if (data.type === 'join') {
+      discussionId = data.discussionId;
+      if (!discussionClients.has(discussionId)) {
+        discussionClients.set(discussionId, new Set());
+      }
+      discussionClients.get(discussionId).add(ws);
+    } else if (data.type === 'message') {
+      // Broadcast to all clients in the same discussion
+      const clients = discussionClients.get(discussionId);
+      if (clients) {
+        clients.forEach((client) => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({
+              type: 'message',
+              userId: data.userId,
+              message: data.message
+            }));
+          }
+        });
+      }
+    }
+  });
+
+  ws.on('close', () => {
+    if (discussionId) {
+      const clients = discussionClients.get(discussionId);
+      if (clients) {
+        clients.delete(ws);
+        if (clients.size === 0) {
+          discussionClients.delete(discussionId);
+        }
+      }
+    }
+  });
+});
