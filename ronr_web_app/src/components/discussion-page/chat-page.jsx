@@ -15,6 +15,9 @@ const ChatPage = () => {
   const [usernames, setUsernames] = React.useState({});
   const [issue, setIssue] = React.useState(''); 
 
+  const[discussionState, setDiscussionState] = React.useState('Unmotioned'); // Default state when page starts
+  const[motionButtonText, setMotionButtonText] = React.useState('Motion to Vote');
+
   React.useEffect(() => {
     console.log("Discussion object:", discussion);
     const fetchMessages = async () => {
@@ -122,6 +125,70 @@ const ChatPage = () => {
     }
   };
 
+
+  const handleMotion = async () => {
+    //if (!discussion?._id || !inputMessage.trim()) return;
+
+    setMotionButtonText('Motion Active: Second it?');
+
+    try {
+      console.log(discussion._id); 
+
+      const motionData = {
+        discussionId: discussion._id
+      };
+
+      const response = await fetch(`/discussion/${discussion._id}/motioned`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(motionData),
+      });
+
+      if (response.ok) {
+        //setMessages(prevMessages => [...prevMessages, [user.id, inputMessage.trim()]]);
+        //setInputMessage('');
+        console.log("Sent motion request successfully!")
+        setDiscussionState('Motioned')
+      } else {
+        console.error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+  
+  // Fetch method for seconding a motion
+  const handleSecond = async () => {
+    //if (!discussion?._id || !inputMessage.trim()) return;
+    
+    try {
+      const motionData = {
+        discussionId: discussion._id
+      };
+
+      const response = await fetch(`/discussion/${discussion._id}/seconded`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(motionData),
+      });
+
+      if (response.ok) {
+        //setMessages(prevMessages => [...prevMessages, [user.id, inputMessage.trim()]]);
+        //setInputMessage('');
+        console.log("Sent second request successfully!")
+        setDiscussionState('Seconded')
+      } else {
+        console.error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSubmit();
@@ -146,7 +213,7 @@ const ChatPage = () => {
             ))}
           </div>
           
-          <button className="motion-button">Motion to Vote</button>
+          <button className="motion-button" onClick={handleMotion}>{motionButtonText}</button>
           
           <h2>Issue:</h2>
           <div className="motions-list">

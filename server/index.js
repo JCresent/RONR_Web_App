@@ -17,7 +17,7 @@ dotenv.config({ path: "../.env" }); // to use the .env file
 //MongoDB
 
 const { MongoClient, ServerApiVersion, Timestamp, ObjectId } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://dsaxena:backendDev432@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 //Database and Clusters
 let database;
@@ -177,16 +177,16 @@ app.get("/discussion/:discussion_id", (req, res) => {
 });
 
 // Route to set "motioned" to true for a specific committee
-app.post("/motioned", async (req, res) => {
+app.post("/discussion/:discussion_id/motioned", async (req, res) => {
   try {
-    const { committee_id } = req.body;
-
-    if (!committee_id) {
+    const committee_id = new ObjectId(req.params.discussion_id);
+    
+    if (!committee_id) { 
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: new ObjectId(committee_id) },
+      { _id: committee_id },
       { $set: { motioned: true } }
     );
 
@@ -204,16 +204,16 @@ app.post("/motioned", async (req, res) => {
 });
 
 // Route to set "seconded" to true for a specific committee
-app.post("/seconded", async (req, res) => {
+app.post("/discussion/:discussion_id/seconded", async (req, res) => {
   try {
-    const { committee_id } = req.body;
+    const committee_id = new ObjectId(req.params.discussion_id);
 
     if (!committee_id) {
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: new ObjectId(committee_id) },
+      { _id: committee_id },
       { $set: { seconded: true } }
     );
 
