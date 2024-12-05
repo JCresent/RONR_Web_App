@@ -1,12 +1,13 @@
 import React from 'react';
 import './home-style.css';
 import courtroomImage from '../../icons/courtroom.jpg';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 const HomePage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const userEmail = location.state?.userEmail || 'No user logged in';
+  // const userEmail = location.state?.userEmail || 'No user logged in';
+  const { user, setUser } = useUser();
   const [discussions, setDiscussions] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [newDiscussion, setNewDiscussion] = React.useState({
@@ -19,6 +20,7 @@ const HomePage = () => {
     try {
       const response = await fetch('/getCommittees');
       const data = await response.json();
+      console.log("Fetched committees:", data);
       setDiscussions(data);
     } catch (error) {
       console.error('Error fetching committees:', error);
@@ -27,9 +29,23 @@ const HomePage = () => {
 
   React.useEffect(() => {
     fetchCommittees();
-  }, []);
+    if (!user) {
+      const storedEmail = localStorage.getItem('userEmail');
+      const storedId = localStorage.getItem('userId');
+      if (storedEmail && storedId) {
+        setUser({ 
+          id: storedId,
+          email: storedEmail 
+        });
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate, setUser]);
 
   const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('userEmail');
     navigate('/');
   };
 
@@ -37,20 +53,69 @@ const HomePage = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmitDiscussion = (e) => {
+  const handleSubmitDiscussion = async (e) => {
     e.preventDefault();
-    const discussion = {
-      id: discussions.length + 1,
-      ...newDiscussion,
-      createdAt: new Date().toISOString(),
-    };
-    setDiscussions([...discussions, discussion]);
-    setIsModalOpen(false);
-    setNewDiscussion({ title: '', description: '' }); // Reset form
+    try {
+      const response = await fetch('/creatediscussion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          owner_id: user?.id, // or user ID if you have one
+          title: newDiscussion.title,
+          description: newDiscussion.description,
+          chair_id: user?.id, // initially set chair as creator
+          members: {}, // empty initially
+        }),
+      });
+
+      if (response.ok) {
+        await response.json();
+        fetchCommittees();
+        setIsModalOpen(false);
+        setNewDiscussion({ title: '', description: '' });
+      } else {
+        console.error('Failed to create discussion');
+      }
+    } catch (error) {
+      console.error('Error creating discussion:', error);
+    }
   };
 
-  const handleJoinDiscussion = (discussion) => {
-    navigate('/chat', { state: { discussion } });
+  const handleJoinDiscussion = async (discussion) => {
+    try {
+      const joinResponse = await fetch(`/discussion/${discussion._id}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user?.id
+        }),
+      });
+
+      const data = await joinResponse.json();
+
+      if (!joinResponse.ok) {
+        console.error('Failed to join discussion');
+        return;
+      }
+
+      navigate('/chat', { 
+        state: { 
+          discussion: {
+            _id: data.discussion._id,
+            title: data.discussion.title,
+            description: data.discussion.description,
+            messages: data.discussion.messages || [],
+            members: data.discussion.members || []
+          } 
+        } 
+      });
+    } catch (error) {
+      console.error('Error joining discussion:', error);
+    }
   };
 
   return (
@@ -70,7 +135,7 @@ const HomePage = () => {
           <h2>Robert's Rules</h2>
         </div>
         <div className="topbar-right">
-          <span className="user-email">{userEmail}</span>
+          <span className="user-email">{user?.email}</span>
           <button 
             type="button" 
             className="btn nav-btn"
@@ -125,7 +190,7 @@ const HomePage = () => {
                 </tr>
               ) : (
                 discussions.map(discussion => (
-                  <tr key={discussion.id}>
+                  <tr key={discussion._id}>
                     <td>{discussion.title}</td>
                     <td>
                       <button 

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login-styles.css';
 import registerIcon from '../../icons/registration_icon.svg';
 
 const RegistrationPage = () => {
+    const navigate = useNavigate();
 
     // Define state variables for form input and errors 
     const [formInput, setFormInput] = useState({
@@ -25,8 +26,9 @@ const RegistrationPage = () => {
         });
     };
 
-    const validateFormInput = (event) => {
-
+    const validateFormInput = async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        
         // Track input errors
         let inputError = {
             email: "",
@@ -40,7 +42,6 @@ const RegistrationPage = () => {
 
         // Check if passwords match
         if (formInput.confirmPassword !== formInput.psw) {
-            event.preventDefault(); 
             console.log("Don't match!");
             setFormError({
                 ...inputError,
@@ -51,7 +52,6 @@ const RegistrationPage = () => {
 
         // Check to make sure email is valid 
         if (!validEmail.test(formInput.email)) {
-            event.preventDefault(); 
             console.log("Invalid Email Format");
             setFormError({
                 ...inputError,
@@ -62,7 +62,6 @@ const RegistrationPage = () => {
 
         // Check to make sure password is valid 
         if (!validPassword.test(formInput.psw)) {
-            event.preventDefault(); 
             console.log("Password is too weak");
             setFormError({
                 ...inputError,
@@ -73,6 +72,33 @@ const RegistrationPage = () => {
 
         // Clear previous errors 
         setFormError(inputError); 
+
+        try {
+            const response = await fetch('/newuser/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formInput.email,
+                    psw: formInput.psw
+                }),
+            });
+
+            if (response.ok) {
+                // Successfully created user, navigate to login page
+                navigate('/');
+                return true;
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Failed to create account');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to create account');
+            return false;
+        }
     }
 
     return (
@@ -91,7 +117,7 @@ const RegistrationPage = () => {
                 <br />
                 <br />
                 <br />
-                <form onSubmit={validateFormInput} action="../../../../newuser/post" method="post" className="reg_form">
+                <form onSubmit={validateFormInput} className="reg_form">
                     <label htmlFor="email" style={{ display: 'block', textAlign: 'left'}}><b>Email</b></label>
                     <input value={formInput.email} onChange={({ target }) => {handleUserInput(target.name, target.value)} } type="text" placeholder="Enter Email" name="email" id="email" required />
                     <p className="error-message">{formError.email}</p>

@@ -5,11 +5,12 @@ import Registration from './components/login-pages/registration'; // Registratio
 import PasswordReset from './components/login-pages/password-reset'; // Password reset page
 import HomePage from './components/home-page/home-page'; // Home page
 import ChatPage from './components/discussion-page/chat-page';
+import { UserProvider } from './context/UserContext';
 
 function App() {
   return (
     <div className="App">
-      {/* <header className="App-header"> */}
+      <UserProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
@@ -19,19 +20,7 @@ function App() {
             <Route path="/chat" element={<ChatPage />} />
           </Routes>
         </BrowserRouter>
-        {/* <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
-      {/* </header> */}
+      </UserProvider>
     </div>
   );
 }
