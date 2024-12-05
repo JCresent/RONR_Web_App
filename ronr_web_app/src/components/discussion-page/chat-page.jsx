@@ -108,11 +108,13 @@ const ChatPage = () => {
     setMotionButtonText('Motion Active: Second it?');
 
     try {
+      console.log(discussion._id); 
+
       const motionData = {
         discussionId: discussion._id
       };
 
-      const response = await fetch(`/motioned`, {
+      const response = await fetch(`/discussion/${discussion._id}/motioned`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +144,7 @@ const ChatPage = () => {
         discussionId: discussion._id
       };
 
-      const response = await fetch("/seconded", {
+      const response = await fetch(`/discussion/${discussion._id}/seconded`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +189,7 @@ const ChatPage = () => {
             ))}
           </div>
           
-          <button className="motion-button" onClick={handleMotion}>motionButtonText</button>
+          <button className="motion-button" onClick={handleMotion}>{motionButtonText}</button>
           
           <h2>Active Motions</h2>
           <div className="motions-list">

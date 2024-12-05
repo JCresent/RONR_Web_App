@@ -143,7 +143,6 @@ const discussionsFilePath = path.join(__dirname, "sample_data", "sample.json");
 
 app.get("/getCommittees", async (req, res) => {
   try {
-log(committees);
     // Remove the projection to get all fields
     const committees = await com_cluster.find({}).toArray();
     console.log("Sending committees:", committees); // Debug log
@@ -178,16 +177,16 @@ app.get("/discussion/:discussion_id", (req, res) => {
 });
 
 // Route to set "motioned" to true for a specific committee
-app.post("/motioned", async (req, res) => {
+app.post("/discussion/:discussion_id/motioned", async (req, res) => {
   try {
-    const { committee_id } = req.body;
-
-    if (!committee_id) {
+    const committee_id = new ObjectId(req.params.discussion_id);
+    
+    if (!committee_id) { 
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: new ObjectId(committee_id) },
+      { _id: committee_id },
       { $set: { motioned: true } }
     );
 
@@ -205,16 +204,16 @@ app.post("/motioned", async (req, res) => {
 });
 
 // Route to set "seconded" to true for a specific committee
-app.post("/seconded", async (req, res) => {
+app.post("/discussion/:discussion_id/seconded", async (req, res) => {
   try {
-    const { committee_id } = req.body;
+    const committee_id = new ObjectId(req.params.discussion_id);
 
     if (!committee_id) {
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: new ObjectId(committee_id) },
+      { _id: committee_id },
       { $set: { seconded: true } }
     );
 
