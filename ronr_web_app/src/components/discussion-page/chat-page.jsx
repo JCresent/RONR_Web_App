@@ -13,6 +13,7 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = React.useState('');
   const [members, setMembers] = React.useState(discussion?.members || []);
   const [usernames, setUsernames] = React.useState({});
+  const [ws, setWs] = React.useState(null);
 
   React.useEffect(() => {
     console.log("Discussion object:", discussion);
@@ -62,6 +63,32 @@ const ChatPage = () => {
     }
   }, [discussion]);
 
+  React.useEffect(() => {
+    if (discussion?._id) {
+      const websocket = new WebSocket('ws://localhost:3002');
+      
+      websocket.onopen = () => {
+        websocket.send(JSON.stringify({
+          type: 'join',
+          discussionId: discussion._id
+        }));
+      };
+
+      websocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'message') {
+          setMessages(prevMessages => [...prevMessages, [data.userId, data.message]]);
+        }
+      };
+
+      setWs(websocket);
+
+      return () => {
+        websocket.close();
+      };
+    }
+  }, [discussion?._id]);
+
   const handleExit = () => {
     navigate('/home');
   };
@@ -71,7 +98,7 @@ const ChatPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!discussion?._id || !inputMessage.trim()) return;
+    if (!discussion?._id || !inputMessage.trim() || !ws) return;
 
     try {
       const messageData = {
@@ -79,6 +106,14 @@ const ChatPage = () => {
         message: inputMessage.trim()
       };
 
+      // First send to WebSocket for real-time update
+      ws.send(JSON.stringify({
+        type: 'message',
+        userId: user.id,
+        message: inputMessage.trim()
+      }));
+
+      // Then persist to database
       const response = await fetch(`/discussion/${discussion._id}/message`, {
         method: 'POST',
         headers: {
