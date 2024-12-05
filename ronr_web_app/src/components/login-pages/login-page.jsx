@@ -7,13 +7,39 @@ import { useUser } from '../../context/UserContext';
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const { setUser } = useUser();
+  const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setUser({ email });
-    localStorage.setItem('userEmail', email);
-    navigate('/home');
+  const handleSubmit = async (event) => {
+    
+    event.preventDefault(); // Prevent form submission
+
+    const formData = {
+      email: email,
+      password: password
+    };
+  
+    try {
+      const response = await fetch('/findUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json(); // Parse JSON response
+  
+      if (response.ok) {
+        //alert(data.message);
+        navigate('/home', { state: { userEmail: email } });
+      } else {
+        alert(data.message); // Show error message
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while processing your request.');
+    }
+
   };
 
   return (
@@ -24,8 +50,8 @@ const LoginPage = () => {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
         <link href="https://fonts.googleapis.com/css2?family=Blinker&display=swap" rel="stylesheet" />
         <title>Login Page</title>
-        <form onSubmit={handleSubmit}>
-            <div className="container">
+        <form onSubmit={handleSubmit} className="signin_form">
+        <div className="container">
                 <div className="registration-title">
                     <h1 className="registration-item">Login</h1>
                     <img className="registration-item" id="registration-image" src={loginIcon} alt="login icon" />
@@ -44,7 +70,12 @@ const LoginPage = () => {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     <label htmlFor="password" style={{ display: 'block', textAlign: 'left'}}><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" id="password" required />
+                    <input 
+                      type="password" 
+                      placeholder="Enter Password" 
+                      name="password" 
+                      onChange={(e) => setPassword(e.target.value)}
+                      id="password" required />
                     <button type="submit" className="registerbtn">Login</button>
                     <br />
                     <br />

@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './home-style.css';
-import courtroomImage from '../icons/courtroom.jpg';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import courtroomImage from '../../icons/courtroom.jpg';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
-  const { user, setUser } = useUser();
+  const location = useLocation();
   const navigate = useNavigate();
+  const userEmail = location.state?.userEmail || 'No user logged in';
   const [discussions, setDiscussions] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [newDiscussion, setNewDiscussion] = React.useState({
@@ -14,21 +14,22 @@ const HomePage = () => {
     description: ''
   });
 
-  useEffect(() => {
-    // Check if user exists in context, if not try localStorage
-    if (!user) {
-      const storedEmail = localStorage.getItem('userEmail');
-      if (storedEmail) {
-        setUser({ email: storedEmail });
-      } else {
-        navigate('/');
-      }
+  //Grabbing committees
+  const fetchCommittees = async () => {
+    try {
+      const response = await fetch('/getCommittees');
+      const data = await response.json();
+      setDiscussions(data);
+    } catch (error) {
+      console.error('Error fetching committees:', error);
     }
-  }, [user, setUser, navigate]);
+  };
+
+  React.useEffect(() => {
+    fetchCommittees();
+  }, []);
 
   const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('userEmail');
     navigate('/');
   };
 
@@ -69,7 +70,7 @@ const HomePage = () => {
           <h2>Robert's Rules</h2>
         </div>
         <div className="topbar-right">
-          <span className="user-email">{user?.email}</span>
+          <span className="user-email">{userEmail}</span>
           <button 
             type="button" 
             className="btn nav-btn"

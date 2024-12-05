@@ -1,4 +1,11 @@
 const express = require("express");
+const app = express();
+const port = 3000;
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const fs = require('fs');
 const path = require('path');
 
@@ -8,8 +15,13 @@ const dotenv = require("dotenv");
 dotenv.config({path: '../.env'}); // to use the .env file
 
 //MongoDB
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, Timestamp } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+//Database and Clusters 
+let database; 
+let com_cluster; 
+let user_cluster; 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -27,20 +39,78 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+    //Grab database and clusters
+    database = client.db("ronr_db");
+    com_cluster = database.collection("commitees");
+    user_cluster = database.collection("users");
   }
 }
 run().catch(console.dir);
 
+// Insert new users into db
+async function insertUser(user_doc) {
+  // Insert into the "users" cluster
+  const result = await user_cluster.insertOne(user_doc); 
+  // Print the ID of the inserted document
+  console.log(`A user was inserted with the _id: ${result.insertedId}`);
+}
 
-const app = express();
-const port = 3000;
+// User signups from signup page
+app.post("/newuser/post", (req, res) => {
+  try {
+    const user_and_pass = req.body;
+    console.log(user_and_pass.email);
+    console.log(user_and_pass.psw);
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+    // Creating document to insert 
+    const user_doc = {
+      username: user_and_pass.email,
+      password: user_and_pass.psw,
+      created_at: new Timestamp(),
+      bio: "None", 
+      is_admin: false,
+    }
+    
+    // Insert into the "users" cluster
+    insertUser(user_doc); 
+  }
+  finally {
+    //Go back to login page 
+    console.log("Success! Created new user."); 
+    res.redirect("/");
+  }
+});
 
+async function findUser(email, pwd){
+  const result = await user_cluster.findOne( {username:email, password:pwd} );
+  console.log("Result of the search: " + result);
+  return result;
+}
+
+app.post("/findUser", async (req, res) => {
+  try{
+    const email = req.body.email; 
+    const password = req.body.password;  
+    console.log("Username is: " + email + ". PWD is: " + password +".");
+    const resultOfSearch = await findUser(email,password);
+    if(resultOfSearch != null){
+      res.status(200).json({
+        message: 'User login successful.',
+      });
+      //res.redirect("/home")
+    }
+    else{
+      res.status(400).json({
+        message: 'Unsuccessful login! Please check your email & password.',
+      });
+    }
+  }
+  catch(error){
+    console.log(error);
+
+    console.log("Error looking up user.")
+  }
+});
 
 // ```
 // OBJECTS FOR DB
@@ -50,6 +120,13 @@ app.use(bodyParser.json());
 //             chair_id INTEGER, 
 //             members { member #: userid, member #: userid, ... },
 //             created_at TIMESTAMP, 
+//             title TEXT
+//             chat { message #: {userid, text}, message #: {userid, text} },
+//             motioned BOOLEAN,
+//             seconded BOOLEAN,
+//             vote_for INTEGER,
+//             vote_against INTEGER,
+//             is_closed BOOLEAN
 //           }
 
 // users {
@@ -65,19 +142,20 @@ app.use(bodyParser.json());
 // Read and parse the JSON file
 const discussionsFilePath = path.join(__dirname, 'sample_data', 'sample.json');
 
-function getDiscussions() {
+app.get("/getCommittees", async (req, res) => {
   try {
-    // Read the file synchronously and parse JSON
-    const data = fs.readFileSync(discussionsFilePath, 'utf-8');
-    return JSON.parse(data);
+    // Read through the database
+    const committees = await com_cluster.find({}, { projection: { "title": 1, "description": 1, _id: 0 } } ).toArray(); //Projection only returns those fields from db
+    // console.log(committees); 
+    res.json(committees);
   } catch (error) {
-    console.error("Error reading the discussions file:", error);
-    return [];
+    console.error("Error grabbing committees:", error);
+    res.status(500).json({ error: "Failed to retrieve committees" });
   }
-}
+}); 
 
 app.get("/", (req, res) => {
-    res.json({
+  res.json({
         "message": "Hello World"
     });
 });
