@@ -15,7 +15,7 @@ const dotenv = require("dotenv");
 dotenv.config({path: '../.env'}); // to use the .env file
 
 //MongoDB
-const { MongoClient, ServerApiVersion, Timestamp } = require('mongodb');
+const { MongoClient, ServerApiVersion, Timestamp, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 //Database and Clusters 
@@ -53,31 +53,29 @@ async function insertUser(user_doc) {
   const result = await user_cluster.insertOne(user_doc); 
   // Print the ID of the inserted document
   console.log(`A user was inserted with the _id: ${result.insertedId}`);
+  return result;
 }
 
 // User signups from signup page
-app.post("/newuser/post", (req, res) => {
+app.post("/newuser/post", async (req, res) => {
   try {
-    const user_and_pass = req.body;
-    console.log(user_and_pass.email);
-    console.log(user_and_pass.psw);
-
-    // Creating document to insert 
     const user_doc = {
-      username: user_and_pass.email,
-      password: user_and_pass.psw,
+      username: req.body.email,
+      password: req.body.psw,
       created_at: new Timestamp(),
       bio: "None", 
       is_admin: false,
     }
     
-    // Insert into the "users" cluster
-    insertUser(user_doc); 
-  }
-  finally {
-    //Go back to login page 
-    console.log("Success! Created new user."); 
-    res.redirect("/");
+    const result = await insertUser(user_doc);
+    console.log("Success! Created new user.");
+    res.status(201).json({
+      message: 'User created successfully',
+      userId: result.insertedId
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Failed to create user" });
   }
 });
 
@@ -88,27 +86,25 @@ async function findUser(email, pwd){
 }
 
 app.post("/findUser", async (req, res) => {
-  try{
+  try {
     const email = req.body.email; 
-    const password = req.body.password;  
-    console.log("Username is: " + email + ". PWD is: " + password +".");
-    const resultOfSearch = await findUser(email,password);
-    if(resultOfSearch != null){
+    const password = req.body.password;
+    const user = await findUser(email, password);
+    
+    if (user) {
       res.status(200).json({
-        message: 'User login successful.',
+        message: 'User login successful',
+        userId: user._id,
+        username: user.username
       });
-      //res.redirect("/home")
-    }
-    else{
+    } else {
       res.status(400).json({
         message: 'Unsuccessful login! Please check your email & password.',
       });
     }
-  }
-  catch(error){
-    console.log(error);
-
-    console.log("Error looking up user.")
+  } catch (error) {
+    console.error("Error looking up user:", error);
+    res.status(500).json({ error: "Failed to login" });
   }
 });
 
@@ -144,9 +140,9 @@ const discussionsFilePath = path.join(__dirname, 'sample_data', 'sample.json');
 
 app.get("/getCommittees", async (req, res) => {
   try {
-    // Read through the database
-    const committees = await com_cluster.find({}, { projection: { "title": 1, "description": 1, _id: 0 } } ).toArray(); //Projection only returns those fields from db
-    // console.log(committees); 
+    // Remove the projection to get all fields
+    const committees = await com_cluster.find({}).toArray();
+    console.log("Sending committees:", committees); // Debug log
     res.json(committees);
   } catch (error) {
     console.error("Error grabbing committees:", error);
@@ -179,4 +175,143 @@ app.get("/discussion/:discussion_id", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+});
+
+// Create new discussion
+app.post("/creatediscussion", async (req, res) => {
+  try {
+    const ownerId = new ObjectId(req.body.owner_id);
+    const discussion = {
+      owner_id: ownerId,
+      chair_id: ownerId,
+      members: [ownerId.toString()],
+      created_at: new Timestamp(),
+      title: req.body.title,
+      description: req.body.description,
+      messages: [],
+      motioned: false,
+      seconded: false,
+      vote_for: 0,
+      vote_against: 0,
+      is_closed: false
+    };
+    
+    const result = await com_cluster.insertOne(discussion);
+    res.status(201).json({
+      message: 'Discussion created successfully',
+      discussion_id: result.insertedId
+    });
+  } catch (error) {
+    console.error("Error creating discussion:", error);
+    res.status(500).json({ error: "Failed to create discussion" });
+  }
+});
+
+// Get messages for a specific discussion
+app.get("/discussion/:discussionId/messages", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+    
+    res.json(discussion.messages || []);
+  } catch (error) {
+    console.error("Error getting messages:", error);
+    res.status(500).json({ error: "Failed to retrieve messages" });
+  }
+});
+
+// Add a new message to a discussion
+app.post("/discussion/:discussionId/message", async (req, res) => {
+  try {
+    const { discussionId } = req.params;
+    console.log("Received discussion ID:", discussionId);
+
+    // Validate ObjectId format
+    if (!ObjectId.isValid(discussionId)) {
+      console.log("Invalid ObjectId format");
+      return res.status(400).json({ error: "Invalid discussion ID format" });
+    }
+
+    const mongoId = new ObjectId(discussionId);
+    const { userId, message } = req.body;
+    
+    const result = await com_cluster.updateOne(
+      { _id: mongoId },
+      { 
+        $push: { 
+          messages: [userId, message]
+        }
+      }
+    );
+    
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+    
+    res.status(201).json({ message: "Message added successfully" });
+  } catch (error) {
+    console.error("Error adding message:", error);
+    res.status(500).json({ error: "Failed to add message" });
+  }
+});
+
+app.post("/discussion/:discussionId/join", async (req, res) => {
+  try {
+    const { discussionId } = req.params;
+    const { userId } = req.body;
+
+    if (!ObjectId.isValid(discussionId)) {
+      return res.status(400).json({ error: "Invalid discussion ID format" });
+    }
+
+    const mongoId = new ObjectId(discussionId);
+    
+    // Add member only if they're not already in the array
+    const result = await com_cluster.updateOne(
+      { _id: mongoId },
+      { 
+        $addToSet: { 
+          members: userId 
+        }
+      }
+    );
+    
+    // Fetch the updated discussion
+    const updatedDiscussion = await com_cluster.findOne({ _id: mongoId });
+    
+    if (!updatedDiscussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+    
+    res.status(200).json({ 
+      message: "Successfully joined discussion",
+      discussion: updatedDiscussion
+    });
+  } catch (error) {
+    console.error("Error joining discussion:", error);
+    res.status(500).json({ error: "Failed to join discussion" });
+  }
+});
+
+app.get("/user/:userId", async (req, res) => {
+  try {
+    const userId = new ObjectId(req.params.userId);
+    const user = await user_cluster.findOne({ _id: userId });
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    res.json({
+      userId: user._id,
+      username: user.username
+    });
+  } catch (error) {
+    console.error("Error getting user:", error);
+    res.status(500).json({ error: "Failed to retrieve user" });
+  }
 });

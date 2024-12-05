@@ -9,13 +9,58 @@ const ChatPage = () => {
   const { user } = useUser();
   const discussion = location.state?.discussion;
 
-  const [messages, setMessages] = React.useState([
-    ['User1', 'Hello!'],
-    ['User2', 'Hi, how are you?'],
-    [user?.email, "I'm good, thanks!"]
-  ]);
+  const [messages, setMessages] = React.useState([]);
   const [inputMessage, setInputMessage] = React.useState('');
-  const [participants] = React.useState([1, 2, 7]);
+  const [members, setMembers] = React.useState(discussion?.members || []);
+  const [usernames, setUsernames] = React.useState({});
+
+  React.useEffect(() => {
+    console.log("Discussion object:", discussion);
+    const fetchMessages = async () => {
+      try {
+        console.log("Fetching messages for ID:", discussion?._id);
+        const response = await fetch(`/discussion/${discussion?._id}/messages`);
+        if (response.ok) {
+          const messageData = await response.json();
+          setMessages(messageData);
+        } else {
+          console.error('Failed to fetch messages');
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    if (discussion?._id) {
+      fetchMessages();
+    }
+  }, [discussion]);
+
+  React.useEffect(() => {
+    const fetchUsernames = async () => {
+      const usernamesMap = {};
+      for (const memberId of discussion?.members || []) {
+        try {
+          const response = await fetch(`/user/${memberId}`);
+          if (response.ok) {
+            const userData = await response.json();
+            usernamesMap[memberId] = userData.username;
+          }
+        } catch (error) {
+          console.error('Error fetching username:', error);
+        }
+      }
+      setUsernames(usernamesMap);
+    };
+
+    fetchUsernames();
+  }, [discussion?.members]);
+
+  React.useEffect(() => {
+    if (discussion?.members) {
+      setMembers(discussion.members);
+    }
+  }, [discussion]);
 
   const handleExit = () => {
     navigate('/home');
@@ -25,13 +70,31 @@ const ChatPage = () => {
     setInputMessage(e.target.value);
   };
 
-  const handleSubmit = () => {
-    if (inputMessage.trim()) {
-      setMessages([...messages, [
-        user?.email,
-        inputMessage
-      ]]);
-      setInputMessage('');
+  const handleSubmit = async () => {
+    if (!discussion?._id || !inputMessage.trim()) return;
+
+    try {
+      const messageData = {
+        userId: user.id,
+        message: inputMessage.trim()
+      };
+
+      const response = await fetch(`/discussion/${discussion._id}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData),
+      });
+
+      if (response.ok) {
+        setMessages(prevMessages => [...prevMessages, [user.id, inputMessage.trim()]]);
+        setInputMessage('');
+      } else {
+        console.error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
@@ -52,9 +115,9 @@ const ChatPage = () => {
         <div className="sidebar">
           <h2>Participants</h2>
           <div className="participants-list">
-            {participants.map(participantId => (
-              <div key={participantId} className="participant">
-                Participant {participantId}
+            {members.map(memberId => (
+              <div key={memberId} className="participant">
+                {usernames[memberId] || 'Loading...'}
               </div>
             ))}
           </div>
@@ -73,10 +136,10 @@ const ChatPage = () => {
             {messages.map((message, index) => (
               <div 
                 key={index} 
-                className={`message ${message[0] === user?.email ? 'user-message' : 'other-message'}`}
+                className={`message ${message[0] === user.id ? 'user-message' : 'other-message'}`}
               >
-                {message[0] !== user?.email && (
-                  <span className="user">{message[0]}:</span>
+                {message[0] !== user.id && (
+                  <span className="user">{usernames[message[0]] || 'Unknown User'}:</span>
                 )}
                 <div className="message-content">{message[1]}</div>
               </div>
