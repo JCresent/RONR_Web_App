@@ -1,27 +1,28 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-//env variables 
+//env variables
 // console.log(require("dotenv").config({path: '../.env'}))
-const dotenv = require("dotenv"); 
-dotenv.config({path: '../.env'}); // to use the .env file
+const dotenv = require("dotenv");
+dotenv.config({ path: "../.env" }); // to use the .env file
 
 //MongoDB
-const { MongoClient, ServerApiVersion, Timestamp, ObjectId } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-//Database and Clusters 
-let database; 
-let com_cluster; 
-let user_cluster; 
+const { MongoClient, ServerApiVersion, Timestamp, ObjectId } = require('mongodb');
+const uri = `mongodb+srv://dsaxena:backendDev432@cluster0.9ffgw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+//Database and Clusters
+let database;
+let com_cluster;
+let user_cluster;
 
 
 const WebSocket = require('ws');
@@ -75,8 +76,8 @@ const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
-    deprecationErrors: true,  
-  }
+    deprecationErrors: true,
+  },
 });
 async function run() {
   try {
@@ -84,7 +85,9 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     //Grab database and clusters
     database = client.db("ronr_db");
@@ -97,7 +100,7 @@ run().catch(console.dir);
 // Insert new users into db
 async function insertUser(user_doc) {
   // Insert into the "users" cluster
-  const result = await user_cluster.insertOne(user_doc); 
+  const result = await user_cluster.insertOne(user_doc);
   // Print the ID of the inserted document
   console.log(`A user was inserted with the _id: ${result.insertedId}`);
   return result;
@@ -110,7 +113,7 @@ app.post("/newuser/post", async (req, res) => {
       username: req.body.email,
       password: req.body.psw,
       created_at: new Timestamp(),
-      bio: "None", 
+      bio: "None",
       is_admin: false,
     }
     
@@ -126,8 +129,8 @@ app.post("/newuser/post", async (req, res) => {
   }
 });
 
-async function findUser(email, pwd){
-  const result = await user_cluster.findOne( {username:email, password:pwd} );
+async function findUser(email, pwd) {
+  const result = await user_cluster.findOne({ username: email, password: pwd });
   console.log("Result of the search: " + result);
   return result;
 }
@@ -146,7 +149,7 @@ app.post("/findUser", async (req, res) => {
       });
     } else {
       res.status(400).json({
-        message: 'Unsuccessful login! Please check your email & password.',
+        message: "Unsuccessful login! Please check your email & password.",
       });
     }
   } catch (error) {
@@ -160,9 +163,9 @@ app.post("/findUser", async (req, res) => {
 // committees {
 //             committee_id INTEGER,
 //             owner_id INTEGER,
-//             chair_id INTEGER, 
+//             chair_id INTEGER,
 //             members { member #: userid, member #: userid, ... },
-//             created_at TIMESTAMP, 
+//             created_at TIMESTAMP,
 //             title TEXT
 //             chat { message #: {userid, text}, message #: {userid, text} },
 //             motioned BOOLEAN,
@@ -175,15 +178,15 @@ app.post("/findUser", async (req, res) => {
 // users {
 //             user_id INTEGER,
 //             username TEXT,
-//             created_at TIMESTAMP, 
-//             bio TEXT, 
+//             created_at TIMESTAMP,
+//             bio TEXT,
 //             is_admin BOOLEAN
 //       }
 // ```
 
 // code to get the sample json data
 // Read and parse the JSON file
-const discussionsFilePath = path.join(__dirname, 'sample_data', 'sample.json');
+const discussionsFilePath = path.join(__dirname, "sample_data", "sample.json");
 
 app.get("/getCommittees", async (req, res) => {
   try {
@@ -195,12 +198,12 @@ app.get("/getCommittees", async (req, res) => {
     console.error("Error grabbing committees:", error);
     res.status(500).json({ error: "Failed to retrieve committees" });
   }
-}); 
+});
 
 app.get("/", (req, res) => {
   res.json({
-        "message": "Hello World"
-    });
+    message: "Hello World",
+  });
 });
 
 // route to get discussions using a discussion id
@@ -209,7 +212,7 @@ app.get("/discussion/:discussion_id", (req, res) => {
   const discussionId = parseInt(req.params.id);
 
   // Find the discussion with the matching ID
-  const discussion = discussions.find(d => d.discussion_id === discussionId);
+  const discussion = discussions.find((d) => d.discussion_id === discussionId);
 
   // If the discussion is not found, return a 404 error
   if (!discussion) {
@@ -218,7 +221,94 @@ app.get("/discussion/:discussion_id", (req, res) => {
 
   // Return the discussion in JSON format
   res.json(discussion);
-})
+});
+
+// Route to set "motioned" to true for a specific committee
+app.post("/discussion/:discussion_id/motioned", async (req, res) => {
+  try {
+    const committee_id = new ObjectId(req.params.discussion_id);
+    
+    if (!committee_id) { 
+      return res.status(400).json({ error: "Missing committee_id" });
+    }
+
+    const result = await com_cluster.updateOne(
+      { _id: committee_id },
+      { $set: { motioned: true } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Committee not found or already motioned" });
+    }
+
+    res.status(200).json({ message: "Motioned successfully" });
+  } catch (error) {
+    console.error("Error setting motioned:", error);
+    res.status(500).json({ error: "Failed to set motioned" });
+  }
+});
+
+// Route to set "seconded" to true for a specific committee
+app.post("/discussion/:discussion_id/seconded", async (req, res) => {
+  try {
+    const committee_id = new ObjectId(req.params.discussion_id);
+
+    if (!committee_id) {
+      return res.status(400).json({ error: "Missing committee_id" });
+    }
+
+    const result = await com_cluster.updateOne(
+      { _id: committee_id },
+      { $set: { seconded: true } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Committee not found or already seconded" });
+    }
+
+    res.status(200).json({ message: "Seconded successfully" });
+  } catch (error) {
+    console.error("Error setting seconded:", error);
+    res.status(500).json({ error: "Failed to set seconded" });
+  }
+});
+
+// Route to handle voting ("for" or "against")
+app.post("/vote", async (req, res) => {
+  try {
+    const { committee_id, vote } = req.body;
+
+    if (!committee_id || !vote) {
+      return res.status(400).json({ error: "Missing committee_id or vote" });
+    }
+
+    if (vote !== "for" && vote !== "against") {
+      return res
+        .status(400)
+        .json({ error: "Invalid vote value, must be 'for' or 'against'" });
+    }
+
+    const fieldToUpdate = vote === "for" ? "vote_for" : "vote_against";
+
+    const result = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { $inc: { [fieldToUpdate]: 1 } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Committee not found" });
+    }
+
+    res.status(200).json({ message: `Vote recorded: ${vote}` });
+  } catch (error) {
+    console.error("Error recording vote:", error);
+    res.status(500).json({ error: "Failed to record vote" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
@@ -251,6 +341,23 @@ app.post("/creatediscussion", async (req, res) => {
   } catch (error) {
     console.error("Error creating discussion:", error);
     res.status(500).json({ error: "Failed to create discussion" });
+  }
+});
+
+// Get issue description for a specific discussion
+app.get("/discussion/:discussionId/description", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+    
+    res.json(discussion.description || "");
+  } catch (error) {
+    console.error("Error getting messages:", error);
+    res.status(500).json({ error: "Failed to retrieve messages" });
   }
 });
 
