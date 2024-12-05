@@ -27,7 +27,6 @@ const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}
 let database;
 let com_cluster;
 let user_cluster;
-let motionsCollection;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -51,7 +50,6 @@ async function run() {
     database = client.db("ronr_db");
     com_cluster = database.collection("commitees");
     user_cluster = database.collection("users");
-    motionsCollection = database.collection("motions");
   }
 }
 run().catch(console.dir);
@@ -185,55 +183,90 @@ app.get("/discussion/:discussion_id", (req, res) => {
   res.json(discussion);
 });
 
-// route to get motions using a motion id
-app.get("/motions/:motion_id", async (req, res) => {
-  const motionId = req.params.motion_id;
-
+// Route to set "motioned" to true for a specific committee
+app.post("/motioned", async (req, res) => {
   try {
-    // Log the motionId to ensure it's being received correctly
-    console.log("Received motionId:", motionId);
+    const { committee_id } = req.body;
 
-    // Convert motionId to ObjectId
-    const objectId = new ObjectId(motionId);
-    console.log("Converted ObjectId:", objectId);
-
-    // Query the database
-    const motion = await motionsCollection.findOne({ _id: objectId });
-
-    // If the motion is not found, return a 404 error
-    if (!motion) {
-      console.log("Motion not found for ObjectId:", objectId);
-      return res.status(404).json({ error: "Motion not found" });
+    if (!committee_id) {
+      return res.status(400).json({ error: "Missing committee_id" });
     }
 
-    // Return the motion in JSON format
-    res.json(motion);
+    const result = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { $set: { motioned: true } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Committee not found or already motioned" });
+    }
+
+    res.status(200).json({ message: "Motioned successfully" });
   } catch (error) {
-    console.error("Error fetching motion:", error);
-    res.status(500).send("Error fetching motion");
+    console.error("Error setting motioned:", error);
+    res.status(500).json({ error: "Failed to set motioned" });
   }
 });
 
-app.post("/motions/", async (req, res) => {
-  const { title, body, user_id, created_at } = req.body;
-
-  if (!title || !body || !user_id || !created_at) {
-    return res.status(400).send("Missing required fields");
-  }
-  // Get existing requests from the database and assign id to the next number available
-  const newMotion = {
-    title,
-    body,
-    user_id,
-    status: "pending",
-    created_at: new Date(created_at),
-  };
-
+// Route to set "seconded" to true for a specific committee
+app.post("/seconded", async (req, res) => {
   try {
-    const result = await motionsCollection.insertOne(newMotion);
-    res.status(201).send(result.ops[0]);
+    const { committee_id } = req.body;
+
+    if (!committee_id) {
+      return res.status(400).json({ error: "Missing committee_id" });
+    }
+
+    const result = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { $set: { seconded: true } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Committee not found or already seconded" });
+    }
+
+    res.status(200).json({ message: "Seconded successfully" });
   } catch (error) {
-    res.status(500).send("Error creating motion");
+    console.error("Error setting seconded:", error);
+    res.status(500).json({ error: "Failed to set seconded" });
+  }
+});
+
+// Route to handle voting ("for" or "against")
+app.post("/vote", async (req, res) => {
+  try {
+    const { committee_id, vote } = req.body;
+
+    if (!committee_id || !vote) {
+      return res.status(400).json({ error: "Missing committee_id or vote" });
+    }
+
+    if (vote !== "for" && vote !== "against") {
+      return res
+        .status(400)
+        .json({ error: "Invalid vote value, must be 'for' or 'against'" });
+    }
+
+    const fieldToUpdate = vote === "for" ? "vote_for" : "vote_against";
+
+    const result = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { $inc: { [fieldToUpdate]: 1 } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Committee not found" });
+    }
+
+    res.status(200).json({ message: `Vote recorded: ${vote}` });
+  } catch (error) {
+    console.error("Error recording vote:", error);
+    res.status(500).json({ error: "Failed to record vote" });
   }
 });
 
