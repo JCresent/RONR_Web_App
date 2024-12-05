@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login-styles.css';
 import loginIcon from '../../icons/login_icon.svg';
+import { useUser } from '../../context/UserContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
 
   const handleSubmit = async (event) => {
-    
-    event.preventDefault(); // Prevent form submission
+    event.preventDefault();
 
     const formData = {
       email: email,
       password: password
     };
-  
+
     try {
       const response = await fetch('/findUser', {
         method: 'POST',
@@ -25,20 +26,22 @@ const LoginPage = () => {
         },
         body: JSON.stringify(formData),
       });
-  
-      const data = await response.json(); // Parse JSON response
-  
+
+      const data = await response.json();
+
       if (response.ok) {
-        //alert(data.message);
-        navigate('/home', { state: { userEmail: email } });
+        setUser({
+          id: data.userId,
+          email: data.username
+        });
+        navigate('/home');
       } else {
-        alert(data.message); // Show error message
+        alert(data.message);
       }
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
     }
-
   };
 
   return (
