@@ -8,6 +8,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
 
   const handleSubmit = async (event) => {
     
@@ -31,7 +32,9 @@ const LoginPage = () => {
   
       if (response.ok) {
         //alert(data.message);
-        navigate('/home', { state: { userEmail: email } });
+        setUser({email});
+        localStorage.setItem('userEmail', email);
+        navigate('/home');
       } else {
         alert(data.message); // Show error message
       }

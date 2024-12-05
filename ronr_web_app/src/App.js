@@ -5,6 +5,7 @@ import Registration from './components/login-pages/registration'; // Registratio
 import PasswordReset from './components/login-pages/password-reset'; // Password reset page
 import HomePage from './components/home-page/home-page'; // Home page
 import ChatPage from './components/discussion-page/chat-page';
+import { UserProvider } from './context/UserContext';
 
 function App() {
   return (

@@ -1,12 +1,13 @@
 import React from 'react';
 import './home-style.css';
 import courtroomImage from '../../icons/courtroom.jpg';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 const HomePage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const userEmail = location.state?.userEmail || 'No user logged in';
+  // const userEmail = location.state?.userEmail || 'No user logged in';
+  const { user, setUser } = useUser();
   const [discussions, setDiscussions] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [newDiscussion, setNewDiscussion] = React.useState({
@@ -27,9 +28,19 @@ const HomePage = () => {
 
   React.useEffect(() => {
     fetchCommittees();
-  }, []);
+    if (!user) {
+      const storedEmail = localStorage.getItem('userEmail');
+      if (storedEmail) {
+        setUser({ email: storedEmail });
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate, setUser]);
 
   const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('userEmail');
     navigate('/');
   };
 
@@ -70,7 +81,7 @@ const HomePage = () => {
           <h2>Robert's Rules</h2>
         </div>
         <div className="topbar-right">
-          <span className="user-email">{userEmail}</span>
+          <span className="user-email">{user?.email}</span>
           <button 
             type="button" 
             className="btn nav-btn"
