@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import './chat-style.css';
@@ -42,7 +42,7 @@ const ChatPage = () => {
     }
     else if(motioned && seconded){
       // Put up Yes / No here since a motion is up and has been seconded.
-      setMotionedStageButton ( <VotingStageButtons/> );
+      setMotionedStageButton ( <VotingStageButtons votesFor={votesFor} votesAgainst={votesAgainst} /> );
     }
 
   };
@@ -345,7 +345,7 @@ const ChatPage = () => {
 
       if (response.ok) {
         console.log("Sent second request successfully!")
-        setMotionedStageButton(<VotingStageButtons/>);
+        setMotionedStageButton(<VotingStageButtons votesFor={votesFor} votesAgainst={votesAgainst}/>);
 
       } else {
         console.error('Failed to send message');
@@ -371,14 +371,21 @@ const ChatPage = () => {
   //    the vote should incremented right after a user presses the button.
   function handleVotingFrontend(voteForOrAgainst){
     if(voteForOrAgainst === 'for'){
-      const newVal = votesFor + 1;
-      setVotesFor(newVal);
+      setVotesFor(prevVotesFor => prevVotesFor + 1);
     }
-    if(voteForOrAgainst === 'against'){
-      const newVal = votesAgainst + 1;
-      setVotesAgainst(newVal);
+    if(voteForOrAgainst === 'against'){ 
+      setVotesAgainst(prevVotesAgainst => prevVotesAgainst + 1);
     }
   }
+
+  // Re-render the state variables 
+  useEffect(() => {
+    if (motioned && seconded) {
+      setMotionedStageButton(
+        <VotingStageButtons votesFor={votesFor} votesAgainst={votesAgainst} />
+      );
+    }
+  }, [votesFor, votesAgainst, motioned, seconded]);
 
   const handleVotingBackend = async (voteForOrAgainst) => {
     try {
@@ -421,7 +428,7 @@ const ChatPage = () => {
     )
   }
 
-  function VotingStageButtons(props) {
+  function VotingStageButtons({ votesFor, votesAgainst }) {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'center',  marginTop: '5px', marginBottom: '0px' }}>
