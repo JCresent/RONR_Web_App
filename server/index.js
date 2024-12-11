@@ -469,3 +469,79 @@ app.get("/user/:userId", async (req, res) => {
     res.status(500).json({ error: "Failed to retrieve user" });
   }
 });
+
+app.get("/discussion/:discussionId/motioned", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+
+    //console.log("Motioned is: " + discussion.motioned);
+
+    res.json(discussion.motioned || "");
+
+  } catch (error) {
+    console.error("Error getting the value of motioned:", error);
+    res.status(500).json({ error: "Failed to retrieve motioned boolean" });
+  }
+});
+
+app.get("/discussion/:discussionId/seconded", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+
+    //console.log("Seconded is: " + discussion.seconded);
+
+    res.json(discussion.seconded || "");
+
+  } catch (error) {
+    console.error("Error getting the value of seconded:", error);
+    res.status(500).json({ error: "Failed to retrieve seconded boolean" });
+  }
+});
+
+app.get("/discussion/:discussionId/votes_for", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+
+    //console.log("Seconded is: " + discussion.seconded);
+
+    res.json(discussion.vote_for || "");
+
+  } catch (error) {
+    console.error("Error getting the value of seconded:", error);
+    res.status(500).json({ error: "Failed to retrieve seconded boolean" });
+  }
+});
+
+app.get("/discussion/:discussionId/votes_against", async (req, res) => {
+  try {
+    const discussionId = new ObjectId(req.params.discussionId);
+    const discussion = await com_cluster.findOne({ _id: discussionId });
+    
+    if (!discussion) {
+      return res.status(404).json({ error: "Discussion not found" });
+    }
+
+    //console.log("Seconded is: " + discussion.seconded);
+
+    res.json(discussion.vote_against || "");
+
+  } catch (error) {
+    console.error("Error getting the value of seconded:", error);
+    res.status(500).json({ error: "Failed to retrieve seconded boolean" });
+  }
+});
