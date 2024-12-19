@@ -67,6 +67,7 @@ const HomePage = () => {
           description: newDiscussion.description,
           chair_id: user?.id, // initially set chair as creator
           members: {}, // empty initially
+          voters: {}, // empty initially
         }),
       });
 

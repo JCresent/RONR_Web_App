@@ -362,7 +362,7 @@ const ChatPage = () => {
   };
 
   function handleVoting(voteForOrAgainst){
-    handleVotingFrontend(voteForOrAgainst);
+    // handleVotingFrontend(voteForOrAgainst);
     handleVotingBackend(voteForOrAgainst);
   }
 
@@ -391,7 +391,8 @@ const ChatPage = () => {
     try {
       const motionData = {
         committee_id: discussion._id,
-        vote: voteForOrAgainst 
+        userId: user?.id,
+        vote: voteForOrAgainst
       };
 
       const response = await fetch(`/vote`, {
@@ -403,7 +404,8 @@ const ChatPage = () => {
       });
 
       if (response.ok) {
-        console.log("Sent vote request successfully!")
+        console.log("Sent vote request successfully!");
+        handleVotingFrontend(voteForOrAgainst);
       } else {
         console.error('Failed to vote.');
       }

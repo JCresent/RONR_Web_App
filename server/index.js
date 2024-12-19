@@ -280,7 +280,7 @@ app.post("/discussion/:discussion_id/seconded", async (req, res) => {
 // Route to handle voting ("for" or "against")
 app.post("/vote", async (req, res) => {
   try {
-    const { committee_id, vote } = req.body;
+    const { committee_id, userId, vote } = req.body;
 
     if (!committee_id || !vote) {
       return res.status(400).json({ error: "Missing committee_id or vote" });
@@ -293,6 +293,19 @@ app.post("/vote", async (req, res) => {
     }
 
     const fieldToUpdate = vote === "for" ? "vote_for" : "vote_against";
+
+    const result_voted = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { 
+        $addToSet: { 
+          voters: new ObjectId(userId)
+        }
+      }
+    );
+
+    if (result_voted.modifiedCount === 0) {
+      return res.status(500).json({ error: "User has already voted" })
+    }
 
     const result = await com_cluster.updateOne(
       { _id: new ObjectId(committee_id) },
@@ -327,7 +340,9 @@ app.post("/creatediscussion", async (req, res) => {
       description: req.body.description,
       messages: [],
       motioned: false,
+      motioner: null, 
       seconded: false,
+      voters: [], 
       vote_for: 0,
       vote_against: 0,
       is_closed: false
