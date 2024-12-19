@@ -227,6 +227,8 @@ app.get("/discussion/:discussion_id", (req, res) => {
 app.post("/discussion/:discussion_id/motioned", async (req, res) => {
   try {
     const committee_id = new ObjectId(req.params.discussion_id);
+    const userID = new ObjectId(req.body.userId);
+    console.log(userID); 
     
     if (!committee_id) { 
       return res.status(400).json({ error: "Missing committee_id" });
@@ -234,7 +236,9 @@ app.post("/discussion/:discussion_id/motioned", async (req, res) => {
 
     const result = await com_cluster.updateOne(
       { _id: committee_id },
-      { $set: { motioned: true } }
+      { $set: { 
+        motioner: userID,
+        motioned: true } }
     );
 
     if (result.modifiedCount === 0) {
@@ -254,20 +258,24 @@ app.post("/discussion/:discussion_id/motioned", async (req, res) => {
 app.post("/discussion/:discussion_id/seconded", async (req, res) => {
   try {
     const committee_id = new ObjectId(req.params.discussion_id);
+    const userID = new ObjectId(req.body.userId);
+    console.log(userID); 
 
     if (!committee_id) {
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: committee_id },
+      { _id: committee_id,
+        motioner: { $ne: userID }
+       },
       { $set: { seconded: true } }
     );
 
     if (result.modifiedCount === 0) {
       return res
-        .status(404)
-        .json({ error: "Committee not found or already seconded" });
+        .status(500)
+        .json({ error: "Committee not found, already seconded, or user is motioner" });
     }
 
     res.status(200).json({ message: "Seconded successfully" });
@@ -280,7 +288,7 @@ app.post("/discussion/:discussion_id/seconded", async (req, res) => {
 // Route to handle voting ("for" or "against")
 app.post("/vote", async (req, res) => {
   try {
-    const { committee_id, vote } = req.body;
+    const { committee_id, userId, vote } = req.body;
 
     if (!committee_id || !vote) {
       return res.status(400).json({ error: "Missing committee_id or vote" });
@@ -293,6 +301,19 @@ app.post("/vote", async (req, res) => {
     }
 
     const fieldToUpdate = vote === "for" ? "vote_for" : "vote_against";
+
+    const result_voted = await com_cluster.updateOne(
+      { _id: new ObjectId(committee_id) },
+      { 
+        $addToSet: { 
+          voters: new ObjectId(userId)
+        }
+      }
+    );
+
+    if (result_voted.modifiedCount === 0) {
+      return res.status(500).json({ error: "User has already voted" })
+    }
 
     const result = await com_cluster.updateOne(
       { _id: new ObjectId(committee_id) },
@@ -327,7 +348,9 @@ app.post("/creatediscussion", async (req, res) => {
       description: req.body.description,
       messages: [],
       motioned: false,
+      motioner: null, 
       seconded: false,
+      voters: [], 
       vote_for: 0,
       vote_against: 0,
       is_closed: false
