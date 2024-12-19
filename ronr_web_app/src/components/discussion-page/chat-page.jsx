@@ -305,7 +305,8 @@ const ChatPage = () => {
       console.log(discussion._id); 
 
       const motionData = {
-        discussionId: discussion._id
+        discussionId: discussion._id,
+        userId: user?.id
       };
 
       const response = await fetch(`/discussion/${discussion._id}/motioned`, {
@@ -332,7 +333,8 @@ const ChatPage = () => {
   const handleSecond = async () => {    
     try {
       const motionData = {
-        discussionId: discussion._id
+        discussionId: discussion._id,
+        userId: user?.id
       };
 
       const response = await fetch(`/discussion/${discussion._id}/seconded`, {

@@ -227,6 +227,8 @@ app.get("/discussion/:discussion_id", (req, res) => {
 app.post("/discussion/:discussion_id/motioned", async (req, res) => {
   try {
     const committee_id = new ObjectId(req.params.discussion_id);
+    const userID = new ObjectId(req.body.userId);
+    console.log(userID); 
     
     if (!committee_id) { 
       return res.status(400).json({ error: "Missing committee_id" });
@@ -234,7 +236,9 @@ app.post("/discussion/:discussion_id/motioned", async (req, res) => {
 
     const result = await com_cluster.updateOne(
       { _id: committee_id },
-      { $set: { motioned: true } }
+      { $set: { 
+        motioner: userID,
+        motioned: true } }
     );
 
     if (result.modifiedCount === 0) {
@@ -254,20 +258,24 @@ app.post("/discussion/:discussion_id/motioned", async (req, res) => {
 app.post("/discussion/:discussion_id/seconded", async (req, res) => {
   try {
     const committee_id = new ObjectId(req.params.discussion_id);
+    const userID = new ObjectId(req.body.userId);
+    console.log(userID); 
 
     if (!committee_id) {
       return res.status(400).json({ error: "Missing committee_id" });
     }
 
     const result = await com_cluster.updateOne(
-      { _id: committee_id },
+      { _id: committee_id,
+        motioner: { $ne: userID }
+       },
       { $set: { seconded: true } }
     );
 
     if (result.modifiedCount === 0) {
       return res
-        .status(404)
-        .json({ error: "Committee not found or already seconded" });
+        .status(500)
+        .json({ error: "Committee not found, already seconded, or user is motioner" });
     }
 
     res.status(200).json({ message: "Seconded successfully" });
